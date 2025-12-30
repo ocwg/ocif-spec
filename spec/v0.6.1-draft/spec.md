@@ -373,6 +373,18 @@ NOTE: To achieve this, the application should calculate a zoom factor as min(can
 
 JSON schema: [viewport-canvas.json](extensions/viewport-canvas.json)
 
+# Entities and Items
+
+OCIF uses an abstract base types called *entity* and *item*. The *entity* type allows for extension data and comments, while the *item* type includes the *entity* properties and adds a unique identifier. The *item* type is extended by the node, relation, resource, and document types, while the *entity* type is directly extended by representation. It defines these common properties:
+
+| Property  | JSON Type | OCIF Type                         | Contents                              |
+| --------- | --------- | --------------------------------- | ------------------------------------- |
+| `id`      | `string`  | [ID](#id)                         | A unique identifier for the item.     |
+| `data`    | `array`   | array of [Extension](#extensions) | Extended item data                    |
+| `comment` | `string`  | string                            | A comment or description of the item. |
+
+Comments exist to annotate OCIF files with additional information when reading the raw text of the file manually, like a comment in a programming language. They MUST NOT be used for any functional purpose by software that processes OCIF files. Comments MAY be preserved or discarded when processing OCIF files, and in either case the file is functionally equivalent.
+
 # Nodes
 
 Nodes represent visual items on the canvas.
@@ -389,6 +401,7 @@ A _Node_ is an `object` with the following properties:
 | `data`        | `array`   | array of [Extension](#extensions) | optional     | Extended node data                  |             |
 | `rotation`    | `number`  | [Angle](#angle)                   | optional     | +/- 360 degrees                     | `0`         |
 | `relation`    | `string`  | [ID](#id)                         | optional     | ID of a [relation](#relation)       | n/a         |
+| `comment`     | `string`  | string                            | optional     | A comment about the node.           |             |
 
 NOTE: JSON numbers allow integer and floating-point values, so does OCIF.
 
@@ -961,11 +974,12 @@ If a relation should be visualized, it should have a corresponding Node.
 
 Every relation has the following properties:
 
-| Property | JSON Type | OCIF Type                | Required     | Contents                                             |
-| -------- | --------- | ------------------------ | ------------ | ---------------------------------------------------- |
-| `id`     | `string`  | [ID](#id)                | **required** | A unique identifier for the relation.                |
-| `data`   | `array`   | [Extension](#extensions) | optional     | Additional data for the relation.                    |
-| `node`   | `string`  | [ID](#id)                | optional     | ID of a visual node, which represents this relation. |
+| Property  | JSON Type | OCIF Type                | Required     | Contents                                             |
+| --------- | --------- | ------------------------ | ------------ | ---------------------------------------------------- |
+| `id`      | `string`  | [ID](#id)                | **required** | A unique identifier for the relation.                |
+| `data`    | `array`   | [Extension](#extensions) | optional     | Additional data for the relation.                    |
+| `node`    | `string`  | [ID](#id)                | optional     | ID of a visual node, which represents this relation. |
+| `comment` | `string`  | string                   | optional     | An optional comment about the relation.              |
 
 Similar to nodes, there is a built-in base relation, which can use extensions.
 Contrary to nodes, the base extension has no pre-defined properties except the `id` and `data` properties.
@@ -1193,10 +1207,12 @@ Typical resources are, e.g., SVG images, text documents, or media files.
 
 A resource is an `object` with the following properties:
 
-| Property          | JSON Type | OCIF Type                           | Required     | Contents                        |
-| ----------------- | --------- | ----------------------------------- | ------------ | ------------------------------- |
-| `id`              | `string`  | [ID](#id)                           | **required** | Identifier of the resource      |
-| `representations` | `array`   | [Representation](#representation)[] | **required** | Representations of the resource |
+| Property          | JSON Type | OCIF Type                           | Required     | Contents                         |
+| ----------------- | --------- | ----------------------------------- | ------------ | -------------------------------- |
+| `id`              | `string`  | [ID](#id)                           | **required** | Identifier of the resource       |
+| `data`            | `array`   | [Extension](#extensions)            | optional     | Additional data for the resource |
+| `representations` | `array`   | [Representation](#representation)[] | **required** | Representations of the resource  |
+| `comment`         | `string`  |                                     | optional     | A comment about the resource     |
 
 - **id**: A unique identifier for the resource. See [ID](#id) type for details.
 
@@ -1206,11 +1222,13 @@ A resource is an `object` with the following properties:
 
 Each _Representation_ object has the following properties:
 
-| Property   | JSON Type | OCIF Type               | Required  | Contents                               |
-| ---------- | --------- | ----------------------- | --------- | -------------------------------------- |
-| `location` | `string`  | [URI](#uri)             | see below | The storage location for the resource. |
-| `mimeType` | `string`  | [MIME Type](#mime-type) | see below | The IANA MIME Type of the resource.    |
-| `content`  | `string`  |                         | see below | The content of the resource.           |
+| Property   | JSON Type | OCIF Type                | Required  | Contents                                |
+| ---------- | --------- | ------------------------ | --------- | --------------------------------------- |
+| `location` | `string`  | [URI](#uri)              | see below | The storage location for the resource.  |
+| `mimeType` | `string`  | [MIME Type](#mime-type)  | see below | The IANA MIME Type of the resource.     |
+| `content`  | `string`  |                          | see below | The content of the resource.            |
+| `data`     | `array`   | [Extension](#extensions) | optional  | Additional data for the representation. |
+| `comment`  | `string`  |                          | optional  | A comment about the representation.     |
 
 Either `content` or `location` MUST be present. If `content` is used, `location` must be left out and vice versa.
 
@@ -1863,6 +1881,7 @@ A circle has a port at the geometric "top" position.
 - Added _page node extension_.
 - Clarification on fillColor
 - Conflict Resolution for Node Transforms
+- Add abstract entity and item schemas, allowing extension data on resources and representations, and allowing comments on everything.
 
 ### From v0.4 to v0.5
 
