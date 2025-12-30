@@ -1576,6 +1576,22 @@ Within the directory, the text is usually stored as a Markdown file, which links
   /schema.json    <-- your JSON schema
 ```
 
+## Data Extension
+The generic **data extension** can be used as [canvas extension](#canvas-extensions), [node extension](#node-extensions), [relation extension](#relation-extensions), resource extension, and representation extension.
+
+- Name: `@ocif/data`
+- URI: `https://spec.canvasprotocol.org/v0.6.1/extensions/data.json`
+
+A data extension is a generic extension to carry data that has no semantics within the OCIF format. The data extension provides a blank JSON object with one reserved property: `type`.
+
+Semantics:
+
+- Like all extensions, apps should preserve unknown extensions and round-trip them on export.
+
+JSON schema: [data.json](extensions/data.json)
+
+
+
 ## Exporting Data with Extensions
 
 When exporting an OCIF file using extensions, the application SHOULD use inline or external schemas for the extensions.
@@ -1865,6 +1881,8 @@ A circle has a port at the geometric "top" position.
 ### From v0.6 to v0.6.1
 
 - Explained canvas-level extensions better
+- Extensions can now be used on canvas, node, relation and resources and representations.
+- Generic data extension added
 
 ### From v0.5 to v0.6
 
