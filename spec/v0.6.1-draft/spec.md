@@ -409,7 +409,7 @@ NOTE: JSON numbers allow integer and floating-point values, so does OCIF.
 
 - **position**: The position of the node on the canvas.
 
-  - Required are **x** (at position `0`) and **y** (at position `1`). Optional is **z** at position `2`.
+  - If defined, required are **x** (at position `0`) and **y** (at position `1`). Optional is **z** at position `2`.
   - The _coordinate system_ has the x-axis pointing to the right, the y-axis pointing down, and the z-axis pointing away from the screen. This is the same as in CSS, SVG, and most 2D and 3D graphics libraries. The origin is the top-left corner of the canvas.
   - The unit is logical pixels (as used in CSS for `px`).
   - The positioned point (to which the `position` refers) is the top-left corner of the node.
@@ -440,9 +440,10 @@ NOTE: JSON numbers allow integer and floating-point values, so does OCIF.
   - `none`: All pixels are displayed in the available space unscaled. The example would be cropped down to the 100 x 200 area top-left. No auto-centering.
   - `containX`: Scaled by keeping the aspect ratio, so that the image width matches the item width. This results in the image being displayed at a scale of `0.2`, so that it is 200 px wide and 200 px high.
     NOTE: This is called `keep-width` in Godot.
+    The image is centered vertically.
     Empty space may be visible above and below the image.
     Never crops the image.
-  - `containY`: Scaled by keeping the aspect ratio, so that the image height matches the item height. This results in the image being displayed at a scale of `0.1`, so that it is 100 px high and 100 px wide. The image is now fully visible, but there are boxes of empty space left and right of the image.
+  - `containY`: Scaled by keeping the aspect ratio, so that the image height matches the item height. This results in the image being displayed at a scale of `0.1`, so that it is 100 px high and 100 px wide. The image is now fully visible, but there are boxes of empty space left and right of the horizontally centered image.
     Never crops the image.
     NOTE: This is called `keep-height` in Godot.
   - `contain`: Scaled by keeping the aspect ratio of the image, so that the image fits into the item for both height and width.
