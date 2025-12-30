@@ -13,7 +13,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; https://github.com/orgs/ocwg/discussions
 
 **Editor:** \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dr. Max Völkel ([ITMV](https://maxvoelkel.de))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dr. Max Völkel ([ITMV](https://maxvoelkel.de), [GraphInOut](https://graphinout.com))
 
 **Authors (alphabetically):** \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Aaron Franke](https://github.com/aaronfranke/) (Godot Engine), \
@@ -1195,7 +1195,7 @@ OCIF knows two kinds of assets, [resources](#resources) and [schemas](#schemas).
 
 Resources are the hypermedia assets that nodes display.
 They are stored separately from Nodes to allow for asset reuse and efficiency.
-Additionally, nodes can be used as resources, too. See XXXX.
+Additionally, nodes can be used as resources, too. See [nodes as resource](#nodes-as-resources).
 
 Resources can be referenced by nodes or relations.
 They are stored in the `resources` property of the OCIF file.
