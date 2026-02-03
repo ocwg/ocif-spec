@@ -38,10 +38,10 @@ When creating a new version of the spec:
      ```
      / https://github.com/ocwg/spec/blob/main/spec/vX.X/spec.md 302
      ```
-   - Excluding the `/spec` directory, find and replace the previous version with the new version (e.g., replace `v0.5` with `v0.6.1`)
+   - Excluding the `/spec` directory, find and replace the previous version with the new version (e.g., replace `v0.5` with `v0.7.0`)
      - This will update the Cookbook, Catalog, Examples, and README.md
 
-6. **Create git tag**: After merging, create and push a git tag for the release (e.g., `git tag v0.6.1 && git push origin v0.6.1`)
+6. **Create git tag**: After merging, create and push a git tag for the release (e.g., `git tag v0.7.0 && git push origin v0.7.0`)
 
 7. **Update website**: Update the version numbers on the [canvasprotocol.org website](https://github.com/ocwg/canvasprotocol.org/blob/main/index.html)
 
