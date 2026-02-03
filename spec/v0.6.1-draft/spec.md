@@ -13,7 +13,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; https://github.com/orgs/ocwg/discussions
 
 **Editor:** \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dr. Max Völkel ([ITMV](https://maxvoelkel.de))
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dr. Max Völkel ([ITMV](https://maxvoelkel.de), [GraphInOut](https://graphinout.com))
 
 **Authors (alphabetically):** \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Aaron Franke](https://github.com/aaronfranke/) (Godot Engine), \
@@ -272,6 +272,8 @@ The OCIF file is a JSON object with the following properties:
     - `https://spec.canvasprotocol.org/v0.1` Retrospectively assigned URI for the first draft at https://github.com/ocwg/spec/blob/initial-draft/README.md
     - `https://spec.canvasprotocol.org/v0.2` This is a preliminary version, as described in this draft, for experiments
     - `https://spec.canvasprotocol.org/v0.3` This is the first stable version.
+    - `https://canvasprotocol.org/ocif/v0.6.1` Is the current version. Note the simplified URI format.
+
 
 - **rootNode**: An optional [root node](#root-node) id. It MUST point to a node defined within the `nodes` array.
 
@@ -324,7 +326,25 @@ Visually, this should render as a box placed with the top-left corner at (100,10
 ## Canvas Extensions
 
 The canvas itself, the whole OCIF document, is also an element that can be extended.
-It is an OCIF item, so extensions are added to the `data` `array`.
+Like for nodes and relations, canvas-level extensions are carried in an array named `data` on the root object of the OCIF file. Each entry in this array is an extension object with a `type` that identifies the extension and any extension-specific properties. Applications MAY add any number of canvas extensions; unknown extensions MUST be ignored.
+
+Example:
+
+```json
+{
+  "ocif": "https://spec.canvasprotocol.org/v0.6.1/schema.json",
+  "data": [
+    {
+      "type": "@ocif/canvas/viewport",
+      "position": [0, 0],
+      "size": [1000, 800]
+    }
+  ],
+  "nodes": [],
+  "relations": [],
+  "resources": []
+}
+```
 
 ### Canvas Viewport
 
@@ -343,7 +363,7 @@ Thus, the effective rendered view might be showing more of the canvas on the top
 NOTE: To achieve this, the application should calculate a zoom factor as min(canvas_width / viewport_width, canvas_height / viewport_height). The view should then be centered by calculating the top-left pan offset as x: (canvas_width - viewport_width _ zoom) / 2 and y: (canvas_height - viewport_height _ zoom) / 2.
 
 | Property   | JSON Type | OCIF Type | Required     | Contents                                | Default     |
-| ---------- | --------- | --------- | ------------ | --------------------------------------- | ----------- |
+|------------|-----------|-----------|--------------|-----------------------------------------|-------------|
 | `position` | `array`   | number[]  | **required** | Coordinate as (x,y) or (x,y,z).         | [0,0]       |
 | `size`     | `array`   | number[]  | **required** | The size of the viewport per dimension. | `[100,100]` |
 
@@ -374,7 +394,7 @@ Conceptually, a node is a rectangle (bounding box) on the canvas, often displayi
 A _Node_ is an `object` with the following properties:
 
 | Property      | JSON Type | OCIF Type                         | Required     | Contents                            | Default     |
-| ------------- | --------- | --------------------------------- | ------------ | ----------------------------------- | ----------- |
+|---------------|-----------|-----------------------------------|--------------|-------------------------------------|-------------|
 | `id`          | `string`  | [ID](#id)                         | **required** | A unique identifier for the node.   | n/a         |
 | `position`    | `array`   | number[]                          | recommended  | Coordinate as (x,y) or (x,y,z).     | [0,0]       |
 | `size`        | `array`   | number[]                          | recommended  | The size of the node per dimension. | `[100,100]` |
@@ -391,7 +411,7 @@ NOTE: JSON numbers allow integer and floating-point values, so does OCIF.
 
 - **position**: The position of the node on the canvas.
 
-  - Required are **x** (at position `0`) and **y** (at position `1`). Optional is **z** at position `2`.
+  - If defined, required are **x** (at position `0`) and **y** (at position `1`). Optional is **z** at position `2`.
   - The _coordinate system_ has the x-axis pointing to the right, the y-axis pointing down, and the z-axis pointing away from the screen. This is the same as in CSS, SVG, and most 2D and 3D graphics libraries. The origin is the top-left corner of the canvas.
   - The unit is logical pixels (as used in CSS for `px`).
   - The positioned point (to which the `position` refers) is the top-left corner of the node.
@@ -422,9 +442,10 @@ NOTE: JSON numbers allow integer and floating-point values, so does OCIF.
   - `none`: All pixels are displayed in the available space unscaled. The example would be cropped down to the 100 x 200 area top-left. No auto-centering.
   - `containX`: Scaled by keeping the aspect ratio, so that the image width matches the item width. This results in the image being displayed at a scale of `0.2`, so that it is 200 px wide and 200 px high.
     NOTE: This is called `keep-width` in Godot.
+    The image is centered vertically.
     Empty space may be visible above and below the image.
     Never crops the image.
-  - `containY`: Scaled by keeping the aspect ratio, so that the image height matches the item height. This results in the image being displayed at a scale of `0.1`, so that it is 100 px high and 100 px wide. The image is now fully visible, but there are boxes of empty space left and right of the image.
+  - `containY`: Scaled by keeping the aspect ratio, so that the image height matches the item height. This results in the image being displayed at a scale of `0.1`, so that it is 100 px high and 100 px wide. The image is now fully visible, but there are boxes of empty space left and right of the horizontally centered image.
     Never crops the image.
     NOTE: This is called `keep-height` in Godot.
   - `contain`: Scaled by keeping the aspect ratio of the image, so that the image fits into the item for both height and width.
@@ -1177,7 +1198,7 @@ OCIF knows two kinds of assets, [resources](#resources) and [schemas](#schemas).
 
 Resources are the hypermedia assets that nodes display.
 They are stored separately from Nodes to allow for asset reuse and efficiency.
-Additionally, nodes can be used as resources, too. See XXXX.
+Additionally, nodes can be used as resources, too. See [nodes as resource](#nodes-as-resources).
 
 Resources can be referenced by nodes or relations.
 They are stored in the `resources` property of the OCIF file.
@@ -1558,6 +1579,22 @@ Within the directory, the text is usually stored as a Markdown file, which links
   /schema.json    <-- your JSON schema
 ```
 
+## Data Extension
+The generic **data extension** can be used as [canvas extension](#canvas-extensions), [node extension](#node-extensions), [relation extension](#relation-extensions), resource extension, and representation extension.
+
+- Name: `@ocif/data`
+- URI: `https://spec.canvasprotocol.org/v0.6.1/extensions/data.json`
+
+A data extension is a generic extension to carry data that has no semantics within the OCIF format. The data extension provides a blank JSON object with one reserved property: `type`.
+
+Semantics:
+
+- Like all extensions, apps should preserve unknown extensions and round-trip them on export.
+
+JSON schema: [data.json](extensions/data.json)
+
+
+
 ## Exporting Data with Extensions
 
 When exporting an OCIF file using extensions, the application SHOULD use inline or external schemas for the extensions.
@@ -1844,7 +1881,13 @@ A circle has a port at the geometric "top" position.
 
 ## Changes
 
-### From v0.5 to v0.6.1
+### From v0.6 to v0.6.1
+
+- Explained canvas-level extensions better
+- Extensions can now be used on canvas, node, relation and resources and representations.
+- Generic data extension added
+
+### From v0.5 to v0.6
 
 **Specification Changes:**
 
