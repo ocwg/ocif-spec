@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "OCIF core v0.6.1",
+  "title": "OCIF core v0.7.0",
   "description": "The schema for the Open Canvas Interchange Format (OCIF) Core document structure.",
   "type": "object",
   "allOf": [{ "$ref": "#/$defs/item" }],
@@ -75,17 +75,38 @@
       "properties": {
         "position": {
           "type": "array",
-          "description": "Coordinate as (x,y) or (x,y,z).",
+          "description": "Local coordinate as (x,y) or (x,y,z), relative to the parent coordinate system.",
           "items": {
             "type": "number"
           }
         },
         "size": {
           "type": "array",
-          "description": "The size of the node per dimension.",
+          "description": "The size of the node per dimension, within its local coordinate system.",
           "items": {
             "type": "number"
           }
+        },
+        "scale": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "description": "Scale factor for the node. The array contains the scale factor for each dimension."
+        },
+        "rotation": {
+          "type": "number",
+          "description": "Relative angle in degrees [+/- 360]. The rotation is added to the rotation of parent coordinate system."
+        },
+        "rotationAxis": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "Rotation axis for 3D rotation. Default is [0,0,1] (z-axis).",
+          "default": [0, 0, 1]
         },
         "resource": {
           "type": "string",
@@ -95,10 +116,6 @@
           "type": "string",
           "description": "Fitting resource in item",
           "enum": ["none", "containX", "containY", "contain", "cover", "fill", "tile"]
-        },
-        "rotation": {
-          "type": "number",
-          "description": "+/- 360 degrees"
         },
         "relation": {
           "type": "string",

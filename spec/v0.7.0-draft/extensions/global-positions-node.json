@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "@ocif/node/global-positions",
+  "description": "Global node coordinates",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "@ocif/node/global-positions"
+    },
+    "globalPosition": {
+      "type": "array",
+      "description": "Global coordinate as (x,y) or (x,y,z).",
+      "items": {
+        "type": "number"
+      }
+    },
+    "globalSize": {
+      "type": "array",
+      "description": "The global size of the node per dimension.",
+      "items": {
+        "type": "number"
+      }
+    },
+    "globalRotation": {
+      "type": "number",
+      "description": "+/- 360 degrees"
+    }
+  },
+  "required": ["type","globalPosition","globalSize"]
+}
