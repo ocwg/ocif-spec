@@ -56,11 +56,10 @@ Open Canvas Interchange Format (OCIF) v0.7.0 © 2025 by Open Canvas Working Grou
     * [Canvas Viewport](#canvas-viewport)
 * [Entities and Items](#entities-and-items)
 * [Nodes](#nodes)
-  * [Identity Properties](#identity-properties)
-  * [2D/3D Layout Properties](#2d3d-layout-properties)
+  * [Structural Properties](#structural-properties)
+  * [Layout Properties](#layout-properties)
   * [Content Properties](#content-properties)
   * [Extension Properties](#extension-properties)
-  * [Comment Properties](#comment-properties)
   * ["Text Nodes"](#text-nodes)
   * ["Image Nodes"](#image-nodes)
   * [Root Node](#root-node)
@@ -82,7 +81,7 @@ Open Canvas Interchange Format (OCIF) v0.7.0 © 2025 by Open Canvas Working Grou
 * [Relation Extensions](#relation-extensions)
   * [Group Relation Extension](#group-relation-extension)
   * [Edge Relation Extension](#edge-relation-extension)
-  * [Parent-Child Relation Extension](#parent-child-relation-extension)
+  * [Inheritance Extension](#inheritance-extension)
   * [Hyperedge Relation Extension](#hyperedge-relation-extension)
 * [Assets](#assets)
   * [Resources](#resources)
@@ -120,6 +119,7 @@ Open Canvas Interchange Format (OCIF) v0.7.0 © 2025 by Open Canvas Working Grou
     * [Node Extension: Circle](#node-extension-circle)
     * [Advanced Examples](#advanced-examples)
   * [OCWG URL Structure (Planned)](#ocwg-url-structure-planned)
+  * [OCWG URL Structure (Planned)](#ocwg-url-structure-planned-1)
   * [Syntax Conventions](#syntax-conventions)
   * [Changes](#changes)
     * [From v0.6 to v0.7.0](#from-v06-to-v070)
@@ -262,7 +262,7 @@ More examples can be found in the [cookbook](./../../cookbook.md).
 The OCIF file is a JSON object with the following properties:
 
 | Property    | JSON Type | OCIF Type                         | Required     | Contents                          |
-| ----------- | --------- | :-------------------------------- | ------------ | --------------------------------- |
+|-------------|-----------|:----------------------------------|--------------|-----------------------------------|
 | `ocif`      | `string`  | [URI](#uri)                       | **required** | The URI of the OCIF schema        |
 | `rootNode`  | `string`  | [ID](#id)                         | optional     | A canvas root [node](#nodes)      |
 | `data`      | `array`   | array of [Extension](#extensions) | optional     | Extended canvas data              |
@@ -298,7 +298,7 @@ The OCIF file is a JSON object with the following properties:
 JSON schema: [schema.json](schema.json)
 
 **Example** \
-A minimal valid OCIF file without any visible items, relations or assets.
+A minimal valid OCIF file without any visible items, relations, or assets.
 
 ```json
 {
@@ -358,6 +358,7 @@ The initial _viewport_ of an OCIF file can be defined with this viewport extensi
 
 - Name: `@ocif/canvas/viewport`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/viewport-canvas.json`
+- Usage: On the canvas (the OCIF document).
 
 A viewport is a rectangle that defines at what part of a canvas the app should initially pan and zoom.
 The viewport is defined relative to the canvas coordinate system, which is defined by its explicit or implicit [root node](#root-node).
@@ -383,10 +384,10 @@ JSON schema: [viewport-canvas.json](extensions/viewport-canvas.json)
 
 # Entities and Items
 
-OCIF uses an abstract base types called *entity* and *item*. The *entity* type allows for extension data and comments, while the *item* type includes the *entity* properties and adds a unique identifier. The *item* type is extended by the node, relation, resource, and document types, while the *entity* type is directly extended by representation. It defines these common properties:
+OCIF uses abstract base types called *entity* and *item*. The *entity* type allows for extension data and comments, while the *item* type includes the *entity* properties and adds a unique identifier. The *item* type is extended by the node, relation, resource, and document types, while the *entity* type is directly extended by representation. It defines these common properties:
 
 | Property  | JSON Type | OCIF Type                         | Contents                              |
-| --------- | --------- | --------------------------------- | ------------------------------------- |
+|-----------|-----------|-----------------------------------|---------------------------------------|
 | `id`      | `string`  | [ID](#id)                         | A unique identifier for the item.     |
 | `data`    | `array`   | array of [Extension](#extensions) | Extended item data                    |
 | `comment` | `string`  | string                            | A comment or description of the item. |
@@ -399,41 +400,68 @@ Nodes represent visual items on the canvas.
 Conceptually, a node is a rectangle (bounding box) on the canvas, often displaying some content (resource).
 A _Node_ is an `object` with the following properties:
 
-| Property       | JSON Type            | OCIF Type                         | Required     | Contents                            | Default     |
-|----------------|----------------------|-----------------------------------|--------------|-------------------------------------|-------------|
-| `id`           | `string`             | [ID](#id)                         | **required** | A unique identifier for the node.   | n/a         |
-| `position`     | `array`              | number[]                          | recommended  | Coordinate as (x,y) or (x,y,z).     | [0,0]       |
-| `size`         | `array`              | number[]                          | recommended  | The size of the node per dimension. | `[100,100]` |
-| `resource`     | `string`             | [ID](#id)                         | optional     | The resource to display             |             |
-| `resourceFit`  | `string`             | enum, see below                   | optional     | Fitting resource in item            | `contain`   |
-| `data`         | `array`              | array of [Extension](#extensions) | optional     | Extended node data                  |             |
-| `rotation`     | `number`             | [Angle](#angle)                   | optional     | +/- 360 degrees                     | `0`         |
-| `rotationAxis` | `number[3]`          |                                   | optional     | Rotation axis                       | `[0,0,1]`   |
-| `relation`     | `string`             | [ID](#id)                         | optional     | ID of a [relation](#relation)       | n/a         |
-| `scale`        | `number`, `number[]` | Vector                            | optional     | Scale factor                        | `1`         |
-| `offset`       | `number`, `number[]` | Vector                            | optional     | Offset                              | `0`         |
-| `comment`      | `string`             | string                            | optional     | A comment about the node.           |             |
+- **[structural](#structural-properties)** (`id`,`parent`, `deleteWithParent`),
+- **[layout](#layout-properties)** (`position`, `size`, `rotation`, `rotationAxis`, `scale`),
+- **[content](#content-properties)** (`resource`, `resourceFit`), and
+- **[extension](#extension-properties)** (`data`, `comment`).
 
-NOTE: JSON numbers allow integer and floating-point values, so does OCIF.
+## Structural Properties
+These are structural properties of a node:
 
-The properties control different aspects of the node: **Identity** (`id`), **2D/3D layout** (`position`, `size`, `rotation`, `rotationAxis`, `scale`, `offset`), **content** (`resource`, `resourceFit`), **extensions** (`data`), and **comments** (`comment`).
+| Property           | JSON Type | OCIF Type | Required     | Contents                                 | Default |
+|--------------------|-----------|-----------|--------------|------------------------------------------|---------|
+| `id`               | `string`  | [ID](#id) | **required** | A unique identifier for the node.        | n/a     |
+| `parent`           | `string`  | [ID](#id) | optional     | ID of a [node](#node)                    | n/a     |
+| `relation`         | `string`  | [ID](#id) | optional     | ID of a [relation](#relation)            | n/a     |
+| `deleteWithParent` | `boolean` |           | optional     | Delete this node when parent is deleted. | `true`  |
 
-## Identity Properties
+<!-- TODO delete 'relation' once node & relaton are unified -->
 
 - **id**: A unique identifier for the node. Must be unique within an OCIF file. See [ID](#ocif-types) type for details.
+-
+- **relation**:
+  The ID of the relation defining the semantics of the visual node (e.g., an [arrow](#arrow-extension)).
+  The [relation](#relation) SHOULD point back to this visual node using its `node` property. It MAY NOT point to another visual node.
+    - Deletion semantics: If a visual node is deleted, which has a `relation` stated, that underlying relation should also be deleted.
 
-## 2D/3D Layout Properties
+- **parent**:
+  The ID of a node to be used as **parent node**.
+  If A has a parent B, we also say that A is a child of B.
+  This parent-child relation models a strict hierarchical relationship between nodes.
+  It establishes a hierarchical relationship that is used in computing the effective, global layout of a node, as explained in [2D/3D Layout Properties](#layout-properties).
+    - If empty, the [root node of the canvas](spec.md#root-node) is the parent node. This is relevant for [node positioning](#layout-properties)
+
+- **deleteWithParent**:
+  A boolean flag indicating if the child (this node) should be deleted when the parent is deleted.
+  The default is `true`.
+
+
+
+## Layout Properties
 OCIF allows customizing the local coordinate system of a node relative to the parent coordinate system.
 Every node creates its own local coordinate system, in which displayed resources and child-nodes are interpreted.
-Child nodes are declared using the [Parent-Child Relation Extension](#parent-child-relation-extension].
+Child nodes are declared, by setting a `parent` property on the child.
 If no parent node is stated, the node is positioned relative to the global, canvas-wide coordinate system.
 In this case, local and global coordinates are the same.
-IF a parent node is stated and changed, local coordinates need to be recalculated, taking the whole chain of nested coordinate systems into account.
+If a parent node is stated and changed, local coordinates need to be recalculated, taking the whole chain of nested coordinate systems into account.
 This is a concept commonly found in game engines and infinitely zoomable canvases.
 For some cases, the [Anchored Node Extension](#anchored-node-extension) can be a better fit.
 Mathematically, these are known as local-to-global transformations.
+Transforms are chainable.
+For example, a node A may transform its coordinate system relative to the canvas.
+Node B may transform relative to the coordinate system of its parent A.
+Then node C transforms the coordinate system again, relative to its parent B.
+The resulting position, scale, and rotation computation requires computing first A, then B, then C.
 
-Transforms are chainable. For example, a node A may transform its coordinate system relative to the canvas. Node B may transform relative to the coordinate system of its parent A. Then node C transforms again relative to its parent B. The resulting scale, rotation, and offset computation requires computing first A, then B, then C.
+| Property       | JSON Type            | OCIF Type       | Required    | Contents                            | Default     |
+|----------------|----------------------|-----------------|-------------|-------------------------------------|-------------|
+| `position`     | `array`              | number[]        | recommended | Coordinate as (x,y) or (x,y,z).     | [0,0]       |
+| `size`         | `array`              | number[]        | recommended | The size of the node per dimension. | `[100,100]` |
+| `rotation`     | `number`             | [Angle](#angle) | optional    | +/- 360 degrees                     | `0`         |
+| `rotationAxis` | `number[3]`          |                 | optional    | Rotation axis                       | `[0,0,1]`   |
+| `scale`        | `number`, `number[]` | Vector          | optional    | Scale factor                        | `1`         |
+
+
 
 - **position**: The position of the node on the canvas, in the local coordinate system.
 
@@ -441,12 +469,13 @@ Transforms are chainable. For example, a node A may transform its coordinate sys
     - The _coordinate system_ has the x-axis pointing to the right, the y-axis pointing down, and the z-axis pointing away from the screen. This is the same as in CSS, SVG, and most 2D and 3D graphics libraries. The origin is the top-left corner of the canvas.
     - The unit is logical pixels (as used in CSS for `px`).
     - The positioned point (to which the `position` refers) is the top-left corner of the node.
-    - The position is global. The computation for this position -- a local position -- can _additionally_ be stated using the [node transforms](spec.md#node-transforms-extension) extension. When the OCIF file is generated, such computations should be applied and the resulting global position be written redundantly into this property.
+    - The position is local, a source for computation of a global position. The global position can _additionally_ be stated using the [global positions](#global-positions-node-extension) extension. When the OCIF file is generated, such computations should be applied and the resulting global position be written redundantly into this property.
     - The default for z-axis is `0` when importing 2D as 3D.
     - When importing 3D as 2D, the z-axis is ignored (but can be left as-is). When a position is changed, the z-axis CAN be set to 0. Yes, this implies that full round-tripping is not always possible.
     - Values on all three axes can be negative.
 
-- **size**: The size of the node in dimensions. I.e., this is **x-axis** ("width" at position `0`), **y-axis** ("height" at position `1`), and **z-axis** ("depth" at position `2`).
+- **size**: The size of the node per dimension.
+This is **x-axis** ("width" at position `0`), **y-axis** ("height" at position `1`), and **z-axis** ("depth" at position `2`). The size is expressed in the local coordinate system of the node.
 
     - Size might be omitted if a linked resource defines the size.
       More precisely: if _all_ [resource representations](#representation) define a size.
@@ -455,23 +484,18 @@ Transforms are chainable. For example, a node A may transform its coordinate sys
         - Text can be wrapped at any width, so a size property is required.\
     - In general, a size property is really useful as a fall-back to display at least a kind of rectangle if the resource cannot be displayed as intended.
 
-- **rotation**: The absolute, global 2D rotation of the node in degrees. The rotation center is the positioned point, i.e., top-left. The z-axis is not modified.
-
 - **scale**: A number-vector (floating-point) to override (set) the automatic scale factor of the node. This defines the scale of the local coordinate system. A larger scale SHOULD also affect font sizes. The scale factors are multiplied component-wise to the parent coordinate system.
 
     - NOTE: The scale factors cannot be computed from global positions alone.
-      Scale factors provide additional state which influences interaction behaviour, e.g., an item drag-dropped into an item with a scale factor of less than 1 causes the item to shrink, when released.
+      Scale factors provide additional state which influences interaction behaviour, e.g., an item drag-dropped into an item with a scale factor of less than 1 causes the item to shrink when released.
+    - For text rendering, the scale factors SHOULD be taken into account.
 
-- **rotation**: A number-vector (floating-point) to override (set) the rotation of the node.
+- **rotation**: A number (floating-point) to override (set) the rotation of the node.
 
     - This (relative, local) rotation is added to the rotation of the parent.
     - A single number around the axis defined in `rotationAxis`, in degrees in counter-clockwise direction.
 
 - **rotationAxis**: The default is `(0,0,1)`. This is the [axis-angle notation](https://en.wikipedia.org/wiki/Axis%E2%80%93angle_representation). The default is to use the z-axis, which results in 'normal' 2D rotation in the x-y-plane.
-
-- **offset**: A number-vector (floating-point). This vector is added to the parent position to result in the childs position. This is the 'recipe' how the global child positions have been computed.
-    - Semantics: When the parent is moved in an app, the app SHOULD update the children's position accordingly. The offset remains unchanged, unless the child itself is moved. In that case, the offset and the position of the child should be adapted.
-    - For text rendering, the scale factors SHOULD be taken into account.
 
 **Practical Advice**\
 For interactive apps, the transforms allow to adapt on parent changes.
@@ -492,14 +516,29 @@ Furthermore, when zooming very large maps, position and size should be computed 
 
 
 ## Content Properties
-The position of a node (`position`) is the top-left corner of a rectangle. The width and height are given in `scale`. Together, they define a rectangle. This rectangle acts as a placement box and **clipping mask** on the contents of the node. The clipping mask should be oval, if the __Oval Node Extension__ is used.
+The position of a node (`position`) is the top-left corner of a rectangle. The width and height are given in `size`.
+Together, they define a rectangle.
+This rectangle acts as a placement box and **clipping mask** on the contents of the node.
+The clipping mask should be oval if the **Oval Node Extension** is used.
+Content is specified with these properties:
+
+| Property      | JSON Type | OCIF Type       | Required | Contents                 | Default   |
+|---------------|-----------|-----------------|----------|--------------------------|-----------|
+| `resource`    | `string`  | [ID](#id)       | optional | The resource to display  |           |
+| `resourceFit` | `string`  | enum, see below | optional | Fitting resource in item | `contain` |
+
+
 
 - **resource**: A reference to a resource, which can be an image, video, or audio file. See [resources](#resources).
 
     - Resource can be empty, in which case a node is acting as a transform for other nodes.
-    - Resource content is cropped/limited by the node boundaries. This is commonly called _clip children_. Only in this respect the resource content is a kind of child. In CSS, this is called `overflow: hidden`.
+    - Resource content is cropped/limited by the node boundaries.
+      This is commonly called _clip children_.
+      Only in this respect the resource content is a kind of child.
+      In CSS, this is called `overflow: hidden`.
 
-    - Resources can define ornamental borders, e.g., a rectangle has a rectangular border, or an [oval](#oval-extension) defines an oval border. The border itself is z-ordered in front of the resource content.
+    - Resources can define ornamental borders, e.g., a rectangle has a rectangular border, or an [oval](#oval-extension) defines an oval border.
+      The border itself is z-ordered in front of the resource content.
 
 - **resourceFit**: Given a node with dimensions 100 (height) x 200 (width) and a bitmap image (e.g., a .png) with a size of 1000 x 1000.
   How should this image be displayed? We re-use some options from CSS ([object-fit](https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit) property):
@@ -523,10 +562,8 @@ The position of a node (`position`) is the top-left corner of a rectangle. The w
     - `fill`: Aspect ratio is ignored and the image is simply stretched to match the width and height of the view box.
     - `tile`: If the image is larger than the viewport, it just gets cropped. If it is smaller, it gets repeated in both dimensions. CSS calls this `background-repeat: repeat`.
 
-- **relation**:
-  The ID of the relation defining the semantics of the visual node (e.g., an [arrow](#arrow-extension)).
-  The [relation](#relation) SHOULD point back to this visual node using its `node` property. It MAY NOT point to another visual node.
-    - Deletion semantics: If a visual node is deleted, which has a `relation` stated, that underlying relation should also be deleted.
+
+
 
 ## Extension Properties
 
@@ -534,10 +571,13 @@ The position of a node (`position`) is the top-left corner of a rectangle. The w
   A node may have any number of extensions. Each extension is a JSON object with a `type` property.
   See [extensions](#extensions).
 
-
-## Comment Properties
-
 - **comment**: A comment in the OCIF file, not in the node.
+
+| Property  | JSON Type   | OCIF Type                         | Required     | Contents                    | Default   |
+|-----------|-------------|-----------------------------------|--------------|-----------------------------|-----------|
+| `comment` | `string`    | string                            | optional     | A comment about the node.   |           |
+| `data`    | `array`     | array of [Extension](#extensions) | optional     | Extended node data          |           |
+
 
 
 
@@ -609,15 +649,15 @@ TIP: Additional node extensions can be used. E.g., an [Oval](#oval-extension) co
 Every canvas has **one** defined or implied _root node_.
 The root node itself SHOULD not be rendered, only its interior.
 If no root node is defined, an implied root with ID `rootNode` is used.
-
-All text styles are already defined as default values of optional properties in the [text style](spec.md#text-style-node-extension) extension. A root node can define these values to set custom standard values for a whole canvas.
-
-The root node 'contains' all nodes that are not explicitly contained by another node.
-"Contain" in this context refers to the [parent-child](spec.md#parent-child-relation-extension) relation.
+Or seen from the other direction: The root node 'contains' all nodes that are not explicitly contained by another node.
 The root node cannot be used as a child of another node within the same file, but instances may be child nodes in another file.
 If a non-root node is not a child of another node, it is implicitly a child of the root node.
 
-The `size` property of the root node effectively defines a canvas size, much like the [viewbox](https://www.w3.org/TR/SVGTiny12/coords.html#ViewBoxAttribute) of an SVG file. However, while a viewbox in SVG allows setting the root position, the coordinate system of an OCIF file always starts in the top-left corner at (0,0).
+All text styles are already defined as default values of optional properties in the [text style](spec.md#text-style-node-extension) extension.
+A root node can define these values to set custom standard values for a whole canvas.
+
+The `size` property of the root node effectively defines a canvas size, much like the [viewbox](https://www.w3.org/TR/SVGTiny12/coords.html#ViewBoxAttribute) of an SVG file.
+However, while a `viewbox` in SVG allows setting the root position, the coordinate system of an OCIF file always starts in the top-left corner at (0,0).
 
 The root node represents the entire OCIF file, and it does not make sense for a node to have a transform relative to itself. Therefore, the `position` and `rotation` properties of the root node MUST NOT be set. If the root node has either of those properties set, the app should ignore their values and emit a warning.
 
@@ -650,12 +690,13 @@ To be placed inside the `data` `array`.
 
 - Name: `@ocif/node/rect`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/rect-node.json`
+- Usage: On a [node](#nodes).
 
 A rectangle is a visual node [extension](#extensions), to define the visual appearance of a node as a rectangle.
 A core node has already a position, size, rotation, scale.
 
 | Property      | JSON Type | OCIF Type       | Required | Contents                 | Default   |
-| ------------- | --------- | --------------- | -------- | ------------------------ | --------- |
+|---------------|-----------|-----------------|----------|--------------------------|-----------|
 | `strokeWidth` | `number`  | number          | optional | The line width.          | `1`       |
 | `strokeColor` | `string`  | [Color](#color) | optional | The color of the stroke. | `#FFFFFF` |
 | `fillColor`   | `string`  | [Color](#color) | optional | The color of the fill.   | (none)    |
@@ -665,7 +706,7 @@ A core node has already a position, size, rotation, scale.
 - **strokeColor**:
   The color of the stroke. Default is white (`#FFFFFF`). Inspired from SVG `stroke`.
 - **fillColor**:
-  The color of the fill. Default is none, meaning fully transparent and allowing clicks to pass through.
+  The color of the fill. Default is `none`, resulting in the node beeing fully transparent and allowing clicks to pass through.
 
 z-order: The stroke (`strokeWidth`, `strokeColor`) SHOULD be rendered "on top" of a resource, while the fill (`fillColor`) SHOULD be rendered "behind" the resource.
 So a _fillColor_ can be used for a background color.
@@ -679,6 +720,7 @@ JSON schema: [rect-node.json](extensions/rect-node.json)
 
 - Name: `@ocif/node/oval`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/oval-node.json`
+- Usage: On a [node](#nodes).
 
 An oval is a visual node extension, to define the visual appearance of a node as an oval.
 An oval in a square bounding box is a circle.
@@ -692,12 +734,13 @@ JSON schema: [oval-node.json](extensions/oval-node.json)
 
 - Name: `@ocif/node/arrow`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/arrow-node.json`
+- Usage: On a [node](#nodes).
 
 An arrow is a visual node that connects two point coordinates.
 It should be rendered as a straight line, with optional direction markers at the start and end.
 
 | Property      | JSON Type | OCIF Type       | Required     | Contents                | Default   |
-| ------------- | --------- | --------------- | ------------ | ----------------------- | --------- |
+|---------------|-----------|-----------------|--------------|-------------------------|-----------|
 | `strokeWidth` | `number`  | number          | optional     | The line width.         | `1`       |
 | `strokeColor` | `string`  | [Color](#color) | optional     | The color of the arrow. | `#FFFFFF` |
 | `start`       | `array`   | number[]        | **required** | The start point.        | n/a       |
@@ -740,7 +783,7 @@ The geometric properties (start and end) often suffice.
 The markers allow representing four kinds of arrow:
 
 | startMarker | endMarker | Visual              |
-| ----------- | --------- | ------------------- |
+|-------------|-----------|---------------------|
 | none        | none      | start `-------` end |
 | none        | arrowhead | start `------>` end |
 | arrowhead   | none      | start `<------` end |
@@ -754,12 +797,13 @@ JSON schema: [arrow-node.json](extensions/arrow-node.json)
 
 - Name: `@ocif/node/path`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/path-node.json`
+- Usage: On a [node](#nodes).
 
 A path is a visual node extension, to define the visual appearance of a node as a path.
 The rendering of resources inside a path is not defined by OCIF, but by the canvas app.
 
 | Property      | JSON Type | OCIF Type       | Required     | Contents               | Default   |
-| ------------- | --------- | --------------- | ------------ | ---------------------- | --------- |
+|---------------|-----------|-----------------|--------------|------------------------|-----------|
 | `strokeWidth` | `number`  | number          | optional     | The line width.        | `1`       |
 | `strokeColor` | `string`  | [Color](#color) | optional     | The color of the path. | `#FFFFFF` |
 | `fillColor`   | `string`  | [Color](#color) | optional     | The color of the fill. | `none`    |
@@ -792,6 +836,7 @@ JSON schema: [path-node.json](extensions/path-node.json)
 
 - Name: `@ocif/node/ports`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/ports-node.json`
+- Usage: On a [node](#nodes).
 
 It provides the familiar concept of _ports_ to a node. A port is a point that allows geometrically controlling where, e.g., arrows are attached to a shape.
 
@@ -799,16 +844,16 @@ Any node can act as a port. The 'container' node uses the _Ports Extension_ to d
 The _Ports Extension_ has the following properties:
 
 | Property | JSON Type | OCIF Type        | Required     | Contents                      | Default |
-| -------- | --------- | ---------------- | ------------ | ----------------------------- | ------- |
+|----------|-----------|------------------|--------------|-------------------------------|---------|
 | `ports`  | `array`   | [ID](spec.md#id) | **required** | IDs of nodes acting as ports. |         |
 
 Each node SHOULD appear only in **one** ports array.
 A port cannot be used by multiple nodes as a port.
 
 **Example** \
-A node (n1) with two ports (p1, p2).
+A node (_n1_) with two ports (_p1_, _p2_).
 Note that _p1_ and _p2_ are normal nodes.
-It is the node _n1_ which uses _p1_ and _p2_ as its ports.
+It is the node _n1_ that uses _p1_ and _p2_ as its ports.
 An arrow can now start at node p1 (which is a port of n1) and end at node n2 (which is not a port in this example).
 
 ```json
@@ -848,24 +893,25 @@ JSON schema: [ports-node.json](extensions/ports-node.json)
 
 - Name: `@ocif/node/global-positions`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/global-positions-node.json`
+- Usage: On a [node](#nodes).
 
 To make it easy for simple viewers to show OCIF content, an OCIF file may pre-compute global positions and store them in this extension.
-They are redundant, as the core OCIF node properties (position, size, rotation, rotationAxis, scale, offset) fully define the global position.
+They are redundant, as the core OCIF node properties (position, size, rotation, rotationAxis, scale) fully define the global position.
 The node can have these properties:
 
-| Property          | JSON Type            | OCIF Type                         | Required     | Contents                            | Default     |
-|-------------------|----------------------|-----------------------------------|--------------|-------------------------------------|-------------|
-| `globalPosition`  | `array`              | number[]                          | recommended  | Coordinate as (x,y) or (x,y,z).     | [0,0]       |
-| `globalSize`      | `array`              | number[]                          | recommended  | The size of the node per dimension. | `[100,100]` |
-| `globalRotation` | `number`             | [Angle](#angle)                   | optional     | +/- 360 degrees                     | `0`         |
+| Property         | JSON Type | OCIF Type       | Required    | Contents                                     | Default     |
+|------------------|-----------|-----------------|-------------|----------------------------------------------|-------------|
+| `globalPosition` | `array`   | number[]        | recommended | Coordinate as (x,y) or (x,y,z).              | [0,0]       |
+| `globalSize`     | `array`   | number[]        | recommended | The absolute size of the node per dimension. | `[100,100]` |
+| `globalRotation` | `number`  | [Angle](#angle) | optional    | +/- 360 degrees                              | `0`         |
 
 - **globalPosition**: The global, absolute position of the node on the canvas.
 
+    - The global position can be computed from local, relative OCIF node properties such as `posiiton`.
     - If defined, required are **x** (at position `0`) and **y** (at position `1`). Optional is **z** at position `2`.
     - The _coordinate system_ has the x-axis pointing to the right, the y-axis pointing down, and the z-axis pointing away from the screen. This is the same as in CSS, SVG, and most 2D and 3D graphics libraries. The origin is the top-left corner of the canvas.
     - The unit is logical pixels (as used in CSS for `px`).
     - The positioned point (to which the `position` refers) is the top-left corner of the node.
-    - The position is global. The computation for this position -- a local position -- is present in OCIF node properties.
     - The default for z-axis is `0` when importing 2D as 3D.
     - When importing 3D as 2D, the z-axis is ignored (but can be left as-is). When a position is changed, the z-axis CAN be set to 0. Yes, this implies that full round-tripping is not always possible.
     - Values on all three axes can be negative.
@@ -873,7 +919,6 @@ The node can have these properties:
 - **globalSize**: The global, absolute size of the node in dimensions. I.e., this is **x-axis** ("width" at position `0`), **y-axis** ("height" at position `1`), and **z-axis** ("depth" at position `2`).
 
     - Size might be omitted if a linked resource defines the size. E.g., raster images such as PNG and JPEG define their size in pixels. SVG can have a `viewbox` defined, but may also omit it. Text can be wrapped at any width, so a size property is clearly required. In general, a size property is really useful as a fall-back to display at least a kind of rectangle if the resource cannot be displayed as intended. Size can only be omitted if _all_ resource representations define a size.\
-    - See also [Size and Resource](#size-and-resource)
 
 - **globalRotation**: The absolute, global 2D rotation of the node in degrees. The rotation center is the positioned point, i.e., top-left. The z-axis is not modified.
 
@@ -889,13 +934,16 @@ For interactive editing, if a parent node is modified, the application SHOULD re
 
 - Name: `@ocif/node/anchored`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/anchored-node.json`
+- Usage: On a [node](#nodes).
 
-This extension is mainly useful to split the space of one node into several auto-resized areas. For placing elements like in a vector-drawing application, but relative to the parent node, the [node transforms](#node-transforms-extension) is often a better tool.
+This extension is mainly useful to split the space of one node into several auto-resized areas.
+For placing elements like in a vector-drawing application, but relative to the parent node, the `parent` property is often a better tool.
 
 - Relative positioning requires anchoring to a parent item.
 
 - The parent position is interpreted as the root of a local coordinate system.
-  NOTE: Parent extensions such as node transforms may have altered the parent's coordinate system. In any case, the effective coordinate system of the parent after applying all extensions on it, is used.
+  NOTE: Parent extensions such as node transforms may have altered the parent's coordinate system.
+  In any case, the effective coordinate system of the parent, after applying all extensions on it, is used.
 
 - The parent size is added to the position and yields the coordinate of the _one_ unit.
   This is (1,1) in 2D and (1,1,1) in 3D.
@@ -906,7 +954,7 @@ NOTE: The coordinates in [0,1]x[0,1] (or [0,1]x[0,1]x[0,1] in 3D) cover any posi
 These percentage-coordinates are now used to position the item.
 
 | Property            | JSON Type                  | OCIF Type             | Required     | Contents            | Default         |
-| ------------------- | -------------------------- | --------------------- | ------------ | ------------------- | --------------- |
+|---------------------|----------------------------|-----------------------|--------------|---------------------|-----------------|
 | `topLeftAnchor`     | `number[2]` or `number[3]` | Percentage Coordinate | **optional** | Top left anchor     | [0,0] / [0,0,0] |
 | `bottomRightAnchor` | `number[2]` or `number[3]` | Percentage Coordinate | **optional** | Bottom-right anchor | [1,1] / [1,1,1] |
 | `topLeftOffset`     | `number[2]` or `number[3]` | Absolute offset       | **optional** | Top left offset     | [0,0] / [0,0,0] |
@@ -914,7 +962,8 @@ These percentage-coordinates are now used to position the item.
 
 The offsets are interpreted in the parent's coordinate system.
 
-If only the top-left position is given, the bottom-right position defaults to [1,1] (or [1,1,1] in 3D) as specified in the default values. This means the node would be anchored at the specified top-left position, and would extend to the bottom-right of the parent.
+If only the top-left position is given, the bottom-right position defaults to [1,1] (or [1,1,1] in 3D) as specified in the default values.
+This means the node would be anchored at the specified top-left position and would extend to the bottom-right of the parent.
 
 JSON schema: [anchored-node.json](extensions/anchored-node.json)
 
@@ -922,11 +971,12 @@ JSON schema: [anchored-node.json](extensions/anchored-node.json)
 
 - Name: `@ocif/node/textstyle`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/textstyle-node.json`
+- Usage: On a [node](#nodes).
 
 The text style extension allows setting common properties for rendering plain text and structured text (such as Markdown or AsciiDoc).
 
 | Property     | JSON Type | OCIF Type       | Required | Contents    | Default      |
-| ------------ | --------- | --------------- | -------- | ----------- | ------------ |
+|--------------|-----------|-----------------|----------|-------------|--------------|
 | `fontSizePx` | `number`  |                 | optional | Font size   | `12px`       |
 | `fontFamily` | `string`  |                 | optional | Font family | `sans-serif` |
 | `color`      | `string`  | Color           | optional | Text color  | `#000000`    |
@@ -947,6 +997,7 @@ JSON schema: [textstyle-node.json](extensions/textstyle-node.json)
 
 - Name: `@ocif/node/theme`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/theme-node.json`
+- Usage: On a [node](#nodes).
 
 The theme node extension allows defining and selecting themes.
 Defining themes works in a recursive way, by setting properties in a named theme.
@@ -995,21 +1046,24 @@ Example for Selecting a Theme on a Node:
 
 - Name: `@ocif/node/page`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/page-node.json`
+- Usage: On a [node](#nodes).
 
 The page node extension allows marking a node as a _page_.
 Several infinite canvas tools have a built-in page concept.
 
 | Property     | JSON Type | OCIF Type | Required | Contents              | Default |
-| ------------ | --------- | --------- | -------- | --------------------- | ------- |
+|--------------|-----------|-----------|----------|-----------------------|---------|
 | `pageNumber` | `number`  | number    | optional | The page number.      | `1`     |
 | `label`      | `string`  | string    | optional | A label for the page. | --      |
 
 - **pageNumber**:
-  Like in a book, pages can have a number. This number defines the order of pages, when listed. The first page should be numbered `1`.
+  Like in a book, pages can have a number. This number defines the order of pages when listed.
+  The first page should be numbered `1`.
 - **label**:
   A label for the page. To be displayed, for example, in a special widget for selecting the current page.
 
-NOTE: When combined with the _root node_ concept, the root node is usually _not_ a page. However, it may have a number of page nodes (nodes with the page node extension) as child nodes (as indicated by the parent-child relation).
+NOTE: When combined with the _root node_ concept, the root node is usually _not_ a page.
+However, it may have a number of page nodes (nodes with the page node extension) as child nodes (as indicated by the parent-child relation).
 
 # Relations
 
@@ -1021,14 +1075,14 @@ If a relation should be visualized, it should have a corresponding Node.
 Every relation has the following properties:
 
 | Property  | JSON Type | OCIF Type                | Required     | Contents                                             |
-| --------- | --------- | ------------------------ | ------------ | ---------------------------------------------------- |
+|-----------|-----------|--------------------------|--------------|------------------------------------------------------|
 | `id`      | `string`  | [ID](#id)                | **required** | A unique identifier for the relation.                |
 | `data`    | `array`   | [Extension](#extensions) | optional     | Additional data for the relation.                    |
 | `node`    | `string`  | [ID](#id)                | optional     | ID of a visual node, which represents this relation. |
 | `comment` | `string`  | string                   | optional     | An optional comment about the relation.              |
 
 Similar to nodes, there is a built-in base relation, which can use extensions.
-Contrary to nodes, the base extension has no pre-defined properties except the `id` and `data` properties.
+Contrary-to-nodes, the base extension has no pre-defined properties except the `id` and `data` properties.
 Thus, relations are very flexible.
 
 - **id**:
@@ -1057,6 +1111,7 @@ If this is your first read of the spec, skip over the details of the relation ty
 
 - Name: `@ocif/rel/group`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/group-rel.json`
+- Usage: On a [node](#nodes).
 
 A group relation is a relation that groups nodes together.
 Groups are known as "Groups" in most canvas apps,
@@ -1065,11 +1120,11 @@ Groups are known as "Groups" in most canvas apps,
 A group has the following properties in its `data` object:
 
 | Property        | JSON Type | OCIF Type   | Required     | Contents                    |
-| --------------- | --------- | ----------- | ------------ | --------------------------- |
+|-----------------|-----------|-------------|--------------|-----------------------------|
 | `members`       | `array`   | [ID](#id)[] | **required** | IDs of members of the group |
 | `cascadeDelete` | `boolean` | `boolean`   | **optional** | `true` or `false`           |
 
-- **members**: A list of IDs of nodes or other groups that are part of the group.
+- **members**: A list of IDs of nodes or other groups (nodes which have the group extension) that are part of the group.
   Resources cannot be part of a group.
 - **cascadeDelete**: A boolean flag indicating if deleting the group should also delete all members of the group.
   If `true`, deleting the group will also delete all members of the group.
@@ -1100,6 +1155,7 @@ JSON schema: [group-rel.json](extensions/group-rel.json)
 
 - Name: `@ocif/rel/edge`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/edge-rel.json`
+- Usage: On a [node](#nodes).
 
 An edge relates two elements (nodes and/or relation, mixing types is allowed).
 It supports directed and undirected (bi-) edges.
@@ -1107,7 +1163,7 @@ It supports directed and undirected (bi-) edges.
 It has the following properties (in addition to standard [relation](#relation) properties):
 
 | Property   | JSON Type | OCIF Type | Required     | Contents                  | Default |
-| ---------- | --------- | :-------- | ------------ | ------------------------- | :------ |
+|------------|-----------|:----------|--------------|---------------------------|:--------|
 | `start`    | `string`  | [ID](#id) | **required** | ID of source element.     |         |
 | `end`      | `string`  | [ID](#id) | **required** | ID of target element.     |         |
 | `directed` | `boolean` |           | optional     | Is the edge directed?     | `true`  |
@@ -1121,45 +1177,48 @@ It has the following properties (in addition to standard [relation](#relation) p
 
 JSON schema: [edge-rel.json](extensions/edge-rel.json)
 
-## Parent-Child Relation Extension
+## Inheritance Extension
 
 - Name: `@ocif/rel/parent-child`
-- URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/parent-child-rel.json`
+- URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/inherit-rel.json`
+- Usage: On a [node](#nodes).
 
-A parent-child relation models a strict hierarchical relationship between nodes or relations.
-It can be used to model inheritance, containment, or other hierarchical relationships.
+The inheritance extension lets a node inherit properties from another node.
+Many nodes may inherit from a single node.
+Inheritance MAY NOT from cycles.
 
-| Property        | JSON Type | OCIF Type        | Required     | Contents                                | Default |
-| --------------- | --------- | ---------------- | ------------ | --------------------------------------- | :------ |
-| `parent`        | `string`  | [ID](spec.md#id) | optional     | ID of the parent.                       | empty   |
-| `child`         | `string`  | [ID](spec.md#id) | **required** | ID of the child.                        |         |
-| `inherit`       | `boolean` |                  | optional     | Inherit properties.                     | `false` |
-| `cascadeDelete` | `boolean` |                  | optional     | Delete children when parent is deleted. | `true`  |
+| Property      | JSON Type  | OCIF Type        | Required | Contents                                       | Default                  |
+|---------------|------------|------------------|----------|------------------------------------------------|:-------------------------|
+| `inheritFrom` | `string`   | [ID](spec.md#id) | optional | ID of the node to inherit from, the **source** | empty                    |
+| `include`     | `string[]` |                  | optional | List of property keys                          | All properties of source |
+| `exclude`     | `string[]` |                  | optional | List of property keys                          | None                     |
 
-- **parent**: The ID of the parent node or relation. There MUST be only one parent per child.
+- **inheritFrom**: The ID of the parent node or relation.
 
-  - If empty, the [root node of the canvas](spec.md#root-node) is the parent node. This is relevant for [node transforms](spec.md#node-transforms-extension).
+    - If empty, the [root node of the canvas](spec.md#root-node) is the parent node.
 
-- **child**: The ID of the child node or relation. A parent can have multiple children (expressed by multiple parent-child relations).
+- **include**: List of property keys to inherit from the source.
+  If defined, only listed property keys are inherited.
+  An empty `include` states that no properties should be inherited.
+  If empty (and no `exclude` is defined), all properties are inherited.
 
-- **inherit**: A boolean flag indicating if the child should inherit properties from the parent. Default is `false`.
-
-  - The Exact semantics of inheritance are defined by the application.
-  - In general, when looking for JSON properties of a child and finding them undefined, an app should look for the same value in the parent.
-    The chain of parents should be followed until a root is reached or a cycle is detected.
-
-- **cascadeDelete**: A boolean flag indicating if the children should be deleted when the parent is deleted. Default it `true`.
+- **exclude**: List of property keys to exclude from the source. All other property keys are inherited.
+  Either `include` or `exclude` may be used, but not both.
 
 Semantics:
 
-- If a parent is deleted, all children, which inherit from the parent, SHOULD also be deleted. (see **cascadeDelete** property)
+- When looking for JSON properties of a child and finding them undefined, an app should look for the same value in the parent.
+  This lookup chain must respect the defined set of inherited properties.
+  Only these properties are inherited.
+  The chain of sources should be followed until a root is reached or a cycle is detected.
 
-JSON schema: [parent-child-rel.json](extensions/parent-child-rel.json)
+JSON schema: [inherit-node.json](extensions/inherit-node.json)
 
 ## Hyperedge Relation Extension
 
 - Name: `@ocif/rel/hyperedge`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/hyperedge-rel.json`
+- Usage: On a [node](#nodes).
 
 A hyperedge is a relation that connects any number of nodes.
 Hyperedges can also be used to model simple bi-edges.
@@ -1172,7 +1231,7 @@ Such a model allows representing all kinds of hyper-edges, even rather obscure o
 A hyper-edge in OCIF has the following properties:
 
 | Property    | JSON Type | OCIF Type | Required     | Contents                             | Default |
-| ----------- | --------- | --------- | ------------ | ------------------------------------ | ------: |
+|-------------|-----------|-----------|--------------|--------------------------------------|--------:|
 | `endpoints` | `array`   | Endpoint  | **required** | List of endpoints of the hyper-edge. |         |
 | `weight`    | `number`  |           | optional     | Weight of the edge                   |   `1.0` |
 | `rel`       | `string`  |           | optional     | Represented relation type            |         |
@@ -1188,7 +1247,7 @@ Edge weight is a common requirement, and no extensions are needed for this simpl
 Each endpoint is an object with the following properties:
 
 | Property    | JSON Type | OCIF Type        | Required     | Contents                                 | Default |
-| ----------- | --------- | ---------------- | ------------ | ---------------------------------------- | ------- |
+|-------------|-----------|------------------|--------------|------------------------------------------|---------|
 | `id`        | `string`  | [ID](spec.md#id) | **required** | ID of attached entity (node or relation) |         |
 | `direction` | `string`  | Direction        | optional     | Direction of the connection.             | `undir` |
 | `weight`    | `number`  |                  | optional     | Weight of the edge                       | `1.0`   |
@@ -1254,7 +1313,7 @@ Typical resources are, e.g., SVG images, text documents, or media files.
 A resource is an `object` with the following properties:
 
 | Property          | JSON Type | OCIF Type                           | Required     | Contents                         |
-| ----------------- | --------- | ----------------------------------- | ------------ | -------------------------------- |
+|-------------------|-----------|-------------------------------------|--------------|----------------------------------|
 | `id`              | `string`  | [ID](#id)                           | **required** | Identifier of the resource       |
 | `data`            | `array`   | [Extension](#extensions)            | optional     | Additional data for the resource |
 | `representations` | `array`   | [Representation](#representation)[] | **required** | Representations of the resource  |
@@ -1269,7 +1328,7 @@ A resource is an `object` with the following properties:
 Each _Representation_ object has the following properties:
 
 | Property   | JSON Type | OCIF Type                | Required  | Contents                                |
-| ---------- | --------- | ------------------------ | --------- | --------------------------------------- |
+|------------|-----------|--------------------------|-----------|-----------------------------------------|
 | `location` | `string`  | [URI](#uri)              | see below | The storage location for the resource.  |
 | `mimeType` | `string`  | [MIME Type](#mime-type)  | see below | The IANA MIME Type of the resource.     |
 | `content`  | `string`  |                          | see below | The content of the resource.            |
@@ -1290,7 +1349,7 @@ Either `content` or `location` MUST be present. If `content` is used, `location`
 Valid resource representations are
 
 |                 | `location`                      | `mimeType`                                                 | `content`          |
-| :-------------- | ------------------------------- | ---------------------------------------------------------- | ------------------ |
+|:----------------|---------------------------------|------------------------------------------------------------|--------------------|
 | Inline text     | Ignored, `content` is set       | E..g. `text/plain` or `image/svg+xml`                      | Text/SVG as string |
 | Inline binary   | Ignored, `content` is set       | E.g. `image/png`                                           | Base64             |
 | Remote          | `https://example.com/sunny.png` | Optional; obtained from HTTP response                      | Ignored            |
@@ -1435,7 +1494,7 @@ Schemas are stored either (1) inline in the `schemas` property of an OCIF docume
 Each entry in the `schemas` array is an object with the following properties:
 
 | Property   | JSON Type | OCIF Type                   | Required     | Contents                                 |
-| ---------- | --------- | :-------------------------- | ------------ | ---------------------------------------- |
+|------------|-----------|:----------------------------|--------------|------------------------------------------|
 | `uri`      | `string`  | absolute [URI](#uri)        | **required** | Identifier (and location) of the schema  |
 | `schema`   | `object`  |                             | optional     | JSON schema inline as a JSON object      |
 | `location` | `string`  | [URI](#uri)                 | optional     | Override storage location for the schema |
@@ -1465,7 +1524,7 @@ When referencing a schema URI, there are two options:
 To summarize, these schema definitions are possible:
 
 | Schema        | `uri`        | `schema`        | `location`                   | `name`   |
-| ------------- | ------------ | --------------- | ---------------------------- | -------- |
+|---------------|--------------|-----------------|------------------------------|----------|
 | Inline Schema | **required** | the JSON schema | --                           | optional |
 | External      | **required** | --              | relative path                | optional |
 | Remote        | **required** | --              | -- (URI is used)             | optional |
@@ -1539,7 +1598,7 @@ They allow adding custom data to **nodes**, **relations**, **resources**, and th
 - Elements (nodes, relations, resources, canvas) can have multiple extensions within their `data` array.
 
 | Property | JSON Type | OCIF Type                                  | Required     | Contents          |
-| -------- | --------- | :----------------------------------------- | ------------ | ----------------- |
+|----------|-----------|:-------------------------------------------|--------------|-------------------|
 | `type`   | `string`  | [Schema Name](#schema-name) or [URI](#uri) | **required** | Type of extension |
 
 - **type**: The type of the extension. This is a URI or a simple name.
@@ -1576,7 +1635,7 @@ the OCIF-using app should treat this as if the file stated
 ]
 ```
 
-This makes combining files by hand easier and uses the same mechanism as [parent-child inheritance](spec.md#parent-child-relation-extension) and [nested canvases](#nesting-canvases) (when merging host node and imported root node).
+This makes combining files by hand easier and uses the same mechanism as the [inheritance extension](#inheritance-extension) and [nested canvases](#nesting-canvases) (when merging host node and imported root node).
 
 For an example of an extension, see the fictional [appendix](#appendix), [Node Extension: Circle](#node-extension-circle).
 In practice, the `@ocif/node/oval` extension can be used.
@@ -1660,6 +1719,7 @@ In the following sections, extensions defined within this specification are list
 The _JSON types_ are just: `object`, `array`, `string`, `number`, `boolean`, `null`.
 OCIF defines more precise types, e.g., _ID_ is a JSON string with additional semantic (must be unique within a document).
 We also use the syntax `ID[]` to refer to a JSON `array`, in which each member is an _ID_.
+NOTE: JSON numbers allow integer and floating-point values, so does OCIF.
 
 Here is the catalog of types used throughout the document (in alphabetical order):
 
@@ -1746,7 +1806,7 @@ The whole canvas is interpreted either as 2D or 3D.
 - Parsing:
 
   - If [IDs](#id) collide, the first defined ID should be used.
-    This is a simple rule, which allows for deterministic behavior.
+    This is a simple rule that allows for deterministic behavior.
     A warning SHOULD be emitted.
 
 - Schema hosting:
@@ -1839,7 +1899,7 @@ This fictive example extension defines geometric circles. In reality, a circle i
 - Properties:
 
 | Property | JSON Type | Required | Contents                    | Default |
-| -------- | --------- | -------- | --------------------------- | ------: |
+|----------|-----------|----------|-----------------------------|--------:|
 | `radius` | number    | optional | The circles radius in pixel |      10 |
 
 - Semantics:
@@ -1909,6 +1969,7 @@ A circle has a port at the geometric "top" position.
 ```
 
 ## OCWG URL Structure (Planned)
+## OCWG URL Structure (Planned)
 
 - `https://canvasprotocol.org` - info site
 - `https://spec.canvasprotocol.org` - specification; REDIRECT to the latest version, e.g. `https://spec.canvasprotocol.org/v0.7.0/spec.md`
@@ -1930,7 +1991,7 @@ A circle has a port at the geometric "top" position.
 
 - Conceptually merged **Node Transforms Extension** into default node properties:
     - Removed Node Transforms `offset`, `rotation`, `rotationAxis`, `scale`
-    - Changed semantics of node `position`, `size`, `rotation` from global to local.
+    - Changed semantics of node `position`, `size`, `rotation`: they are now interpreted in the local coordinate system (previously global).
     - Added node `rotationAxis`, `scale`.
     - Added new node extension **global-positions**, with properties `globalPosition`, `globalSize` and `globalRotation` to store pre-computed values.
 - Extensions can now be used on canvas, node, relation and resources and representations.
@@ -1945,8 +2006,8 @@ A circle has a port at the geometric "top" position.
 **Specification Changes:**
 
 - Merged _Core Extensions_ and _Extended Extensions_
-- Added a `rootNode` property to allow choosing a single node as root. This helps for nesting canvases, which is now also documented.
-- Added canvas-level extensions (`data` in OCIF document), such as the new _canvas viewport_ extension.
+- Added a `rootNode` property to allow choosing a single node as root. This helps for "nesting canvases", which is now also documented.
+- Added canvas-level extensions (`data` in an OCIF document), such as the new _canvas viewport_ extension.
 - Move _parent-child-relation_ to main extensions.
 - Define how to read and combine multiple extensions of the same type
 - Fix some typos
@@ -1980,7 +2041,7 @@ A circle has a port at the geometric "top" position.
 
 - Changed @ocwg to @ocif
 - Prefaced all version numbers with `v` as in `v0.4`
-- Moved node `scale` property to [node transforms](spec.md#node-transforms-extension) extension.
+- Moved node `scale` property to node transforms extension.
 - Changed from @ocwg (Open Canvas Working Group) to @ocif (Open Canvas Interchange Format) in schema names.
 - Prefaced all version numbers with `v` as in `v0.4`
 - Added release instructions

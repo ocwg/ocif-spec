@@ -8,9 +8,9 @@
       "type": "string",
       "const": "@ocif/rel/parent-child"
     },
-    "parent": {
+    "inheritFrom": {
       "type": "string",
-      "description": "ID of the parent node. There SHOULD be only one parent per child."
+      "description": "ID of the source node. "
     },
     "child": {
       "type": "string",

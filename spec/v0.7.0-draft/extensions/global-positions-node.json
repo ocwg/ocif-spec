@@ -27,5 +27,5 @@
       "description": "+/- 360 degrees"
     }
   },
-  "required": ["type","globalPosition","globalSize"]
+  "required": ["type","globalPosition","globalSize","globalRotation"]
 }

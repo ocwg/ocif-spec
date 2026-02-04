@@ -88,11 +88,18 @@
           }
         },
         "scale": {
-          "type": "array",
-          "items": {
-            "type": "number"
-          },
-          "description": "Scale factor for the node. The array contains the scale factor for each dimension."
+          "description": "Scale factor for the node. The array contains the scale factor for each dimension.",
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          ]
         },
         "rotation": {
           "type": "number",
