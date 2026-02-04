@@ -396,11 +396,12 @@ Comments exist to annotate OCIF files with additional information when reading t
 
 # Nodes
 
-Nodes represent visual items on the canvas.
-Conceptually, a node is a rectangle (bounding box) on the canvas, often displaying some content (resource).
+Nodes are the main entities of a canvas.
+A node is visible, also called visual node in this spec, if it has a position and size.
+Conceptually, a visual node is a rectangle (bounding box) on the canvas, often displaying some content (resource).
 A _Node_ is an `object` with the following properties:
 
-- **[structural](#structural-properties)** (`id`,`parent`, `deleteWithParent`),
+- **[structural](#structural-properties)** (`id` (required),`parent`, `deleteWithParent`),
 - **[layout](#layout-properties)** (`position`, `size`, `rotation`, `rotationAxis`, `scale`),
 - **[content](#content-properties)** (`resource`, `resourceFit`), and
 - **[extension](#extension-properties)** (`data`, `comment`).
@@ -453,15 +454,15 @@ Node B may transform relative to the coordinate system of its parent A.
 Then node C transforms the coordinate system again, relative to its parent B.
 The resulting position, scale, and rotation computation requires computing first A, then B, then C.
 
-| Property       | JSON Type            | OCIF Type       | Required    | Contents                            | Default     |
-|----------------|----------------------|-----------------|-------------|-------------------------------------|-------------|
-| `position`     | `array`              | number[]        | recommended | Coordinate as (x,y) or (x,y,z).     | [0,0]       |
-| `size`         | `array`              | number[]        | recommended | The size of the node per dimension. | `[100,100]` |
-| `rotation`     | `number`             | [Angle](#angle) | optional    | +/- 360 degrees                     | `0`         |
-| `rotationAxis` | `number[3]`          |                 | optional    | Rotation axis                       | `[0,0,1]`   |
-| `scale`        | `number`, `number[]` | Vector          | optional    | Scale factor                        | `1`         |
+| Property       | JSON Type            | OCIF Type       | Required       | Contents                            | Default     |
+|----------------|----------------------|-----------------|----------------|-------------------------------------|-------------|
+| `position`     | `array`              | number[]        | recommended(*) | Coordinate as (x,y) or (x,y,z).     | [0,0]       |
+| `size`         | `array`              | number[]        | recommended(*) | The size of the node per dimension. | `[100,100]` |
+| `rotation`     | `number`             | [Angle](#angle) | optional       | +/- 360 degrees                     | `0`         |
+| `rotationAxis` | `number[3]`          |                 | optional       | Rotation axis                       | `[0,0,1]`   |
+| `scale`        | `number`, `number[]` | Vector          | optional       | Scale factor                        | `1`         |
 
-
+(*): A node without `position` and `size` can serve, for example, as a [logical grouping](#group-relation-extension) or a purely structural [edge](#edge-relation-extension). But most nodes on a canvas are usually visible.
 
 - **position**: The position of the node on the canvas, in the local coordinate system.
 
