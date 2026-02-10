@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "@ocif/node/arrow",
+  "title": "@ocif/arrow",
   "description": "Arrow node extension",
   "type": "object",
   "properties": {
     "type": {
       "type": "string",
-      "const": "@ocif/node/arrow"
+      "const": "@ocif/arrow"
     },
     "strokeWidth": {
       "type": "number",

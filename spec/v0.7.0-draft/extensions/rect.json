@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "@ocif/node/rect",
+  "title": "@ocif/rect",
   "description": "Rectangle node extension",
   "type": "object",
   "properties": {
     "type": {
       "type": "string",
-      "const": "@ocif/node/rect"
+      "const": "@ocif/rect"
     },
     "strokeWidth": {
       "type": "number",

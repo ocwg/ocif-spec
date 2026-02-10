@@ -7,7 +7,7 @@
 **Latest version:** \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; https://spec.canvasprotocol.org/v0.7.0 \
 **Previous version:** \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; https://spec.canvasprotocol.org/v0.4.0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; https://spec.canvasprotocol.org/v0.6
 
 **Feedback:** \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; https://github.com/orgs/ocwg/discussions
@@ -17,11 +17,11 @@
 
 **Authors (alphabetically):** \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Aaron Franke](https://github.com/aaronfranke/) (Godot Engine), \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Maikel van de Lisdonk](https://devhelpr.com) ([Code Flow Canvas](https://codeflowcanvas.io/)) \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Jess Martin](https://jessmart.in) ([sociotechnica](https://sociotechnica.org)) \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Maikel van de Lisdonk](https://devhelpr.com) ([Code Flow Canvas](https://codeflowcanvas.io/)), \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Jess Martin](https://jessmart.in) ([sociotechnica](https://sociotechnica.org)), \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Orion Reed
 
-Copyright © 2024, 2025 the Contributors to the Open Canvas Working Group (OCWG).
+Copyright © 2024, 2025, 2026 the Contributors to the Open Canvas Working Group (OCWG).
 
 ## Abstract
 
@@ -119,7 +119,6 @@ Open Canvas Interchange Format (OCIF) v0.7.0 © 2025-2026 by Open Canvas Working
     * [Node Extension: Circle](#node-extension-circle)
     * [Advanced Examples](#advanced-examples)
   * [OCWG URL Structure (Planned)](#ocwg-url-structure-planned)
-  * [OCWG URL Structure (Planned)](#ocwg-url-structure-planned-1)
   * [Syntax Conventions](#syntax-conventions)
   * [Changes](#changes)
     * [From v0.6 to v0.7.0](#from-v06-to-v070)
@@ -183,7 +182,7 @@ In OCIF, it looks like this (using JSON5 here):
       resource: "berlin-res",
       /* a green rect with a 3 pixel wide black border line */
       data: [{
-          type: "@ocif/node/rect",
+          type: "@ocif/rect",
           strokeWidth: 3,
           strokeColor: "#000000",
           fillColor: "#00FF00",
@@ -196,7 +195,7 @@ In OCIF, it looks like this (using JSON5 here):
       resource: "germany-res",
       /* a white rect with a 5 pixel wide red border line */
       data: [{
-          type: "@ocif/node/oval",
+          type: "@ocif/oval",
           strokeWidth: 5,
           strokeColor: "#FF0000",
           fillColor: "#FFFFFF",
@@ -204,7 +203,7 @@ In OCIF, it looks like this (using JSON5 here):
     },
     { id: "arrow-1",
       data: [
-        { type: "@ocif/node/arrow",
+        { type: "@ocif/arrow",
           strokeColor: "#000000",
           /* right side of Berlin */
           start: [200, 125],
@@ -213,7 +212,7 @@ In OCIF, it looks like this (using JSON5 here):
           startMarker: "none",
           endMarker: "arrowhead",
         },
-        { type: "@ocif/rel/edge",
+        { type: "@ocif/edge",
           start: "berlin-node",
           end: "germany-node",
           /* WikiData 'is capital of'.
@@ -313,7 +312,7 @@ Example:
 
 ```json
 {
-  "ocif": "https://spec.canvasprotocol.org/v0.7.0/schema.json",
+  "ocif": "https://canvasprotocol.org/ocif/v0.7.0",
   "data": [
     { "type": "@ocif/canvas/viewport",
       "position": [0, 0],
@@ -687,10 +686,11 @@ If this is your first read of the spec, skip over the details of the extension t
 
 
 ## Shape Extensions
+Each node should have zero or one shape. Using multiple of the shape extensions has no clear interpretation.
 
 ### Rectangle Extension
 
-- Name: `@ocif/node/rect`
+- Name: `@ocif/rect`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/rect.json`
 - Usage: On a [node](#nodes).
 
@@ -708,7 +708,7 @@ A core node has already a position, size, rotation, scale.
 - **strokeColor**:
   The color of the stroke. Default is white (`#FFFFFF`). Inspired from SVG `stroke`.
 - **fillColor**:
-  The color of the fill. Default is `none`, resulting in the node beeing fully transparent and allowing clicks to pass through.
+  The color of the fill. Default is `none`, resulting in the node being fully transparent and allowing clicks to pass through.
 
 z-order: The stroke (`strokeWidth`, `strokeColor`) SHOULD be rendered "on top" of a resource, while the fill (`fillColor`) SHOULD be rendered "behind" the resource.
 So a _fillColor_ can be used for a background color.
@@ -720,7 +720,7 @@ JSON schema: [rect.json](extensions/rect.json)
 
 ### Oval Extension
 
-- Name: `@ocif/node/oval`
+- Name: `@ocif/oval`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/oval.json`
 - Usage: On a [node](#nodes).
 
@@ -734,7 +734,7 @@ JSON schema: [oval.json](extensions/oval.json)
 
 ### Arrow Extension
 
-- Name: `@ocif/node/arrow`
+- Name: `@ocif/arrow`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/arrow.json`
 - Usage: On a [node](#nodes).
 
@@ -797,7 +797,7 @@ JSON schema: [arrow.json](extensions/arrow.json)
 
 ### Path Extension
 
-- Name: `@ocif/node/path`
+- Name: `@ocif/path`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/path.json`
 - Usage: On a [node](#nodes).
 
@@ -841,7 +841,7 @@ The following extensions deal more with placement (layout) of nodes.
 
 ### Ports Extension
 
-- Name: `@ocif/node/ports`
+- Name: `@ocif/ports`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/ports.json`
 - Usage: On a [node](#nodes).
 
@@ -872,7 +872,7 @@ An arrow can now start at node p1 (which is a port of n1) and end at node n2 (wh
       "size": [100, 100],
       "data": [
         {
-          "type": "@ocif/node/ports",
+          "type": "@ocif/ports",
           "ports": ["p1", "p2"]
         }
       ]
@@ -898,7 +898,7 @@ JSON schema: [ports.json](extensions/ports.json)
 
 ### Global Positions Extension
 
-- Name: `@ocif/node/global-positions`
+- Name: `@ocif/global-positions`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/global-positions.json`
 - Usage: On a [node](#nodes).
 
@@ -914,7 +914,7 @@ The node can have these properties:
 
 - **globalPosition**: The global, absolute position of the node on the canvas.
 
-    - The global position can be computed from local, relative OCIF node properties such as `posiiton`.
+    - The global position can be computed from local, relative OCIF node properties such as `position`.
     - If defined, required are **x** (at position `0`) and **y** (at position `1`). Optional is **z** at position `2`.
     - The _coordinate system_ has the x-axis pointing to the right, the y-axis pointing down, and the z-axis pointing away from the screen. This is the same as in CSS, SVG, and most 2D and 3D graphics libraries. The origin is the top-left corner of the canvas.
     - The unit is logical pixels (as used in CSS for `px`).
@@ -939,7 +939,7 @@ For interactive editing, if a parent node is modified, the application SHOULD re
 
 ### Anchored Node Extension
 
-- Name: `@ocif/node/anchored`
+- Name: `@ocif/anchored-node`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/anchored-node.json`
 - Usage: On a [node](#nodes).
 
@@ -972,7 +972,7 @@ The offsets are interpreted in the parent's coordinate system.
 If only the top-left position is given, the bottom-right position defaults to [1,1] (or [1,1,1] in 3D) as specified in the default values.
 This means the node would be anchored at the specified top-left position and would extend to the bottom-right of the parent.
 
-JSON schema: [anchored.json](extensions/anchored-node.json)
+JSON schema: [anchored-node.json](extensions/anchored-node.json)
 
 
 ## Style Extensions
@@ -980,22 +980,22 @@ The following extensions influence a nodes style beyond the shape.
 
 ### Text Style Extension
 
-- Name: `@ocif/node/textstyle`
+- Name: `@ocif/textstyle`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/textstyle.json`
 - Usage: On a [node](#nodes).
 
-The text style extension allows setting common properties for rendering plain text and structured text (such as Markdown or AsciiDoc).
+The text style extension allows setting common properties for rendering plain text and structured text (such as Markdown or AsciiDoc). It is much simpler than CSS.
 
 | Property     | JSON Type | OCIF Type       | Required | Contents    | Default      |
 |--------------|-----------|-----------------|----------|-------------|--------------|
-| `fontSizePx` | `number`  |                 | optional | Font size   | `12px`       |
+| `fontSizePx` | `number`  |                 | optional | Font size   | `12`         |
 | `fontFamily` | `string`  |                 | optional | Font family | `sans-serif` |
 | `color`      | `string`  | Color           | optional | Text color  | `#000000`    |
 | `align`      | `string`  | enum, see below | optional | Alignment   | `left`       |
 | `bold`       | `boolean` |                 | optional | Bold text   | `false`      |
 | `italic`     | `boolean` |                 | optional | Italic text | `false`      |
 
-- **fontSize**: The font size in `px`, as used in CSS.
+- **fontSizePx**: The font size in `px`, as used in CSS. Note that this value is only a number. So a `fontSizePx=12` is interpreted like the CSS value `12px`. OCIF supports no other units.
 - **fontFamily**: The font family, as used in CSS.
 - **color**: The text color. See [Color](spec.md#color).
 - **align**: The text alignment. Possible values are `left`, `right`, `center`, `justify`.
@@ -1006,8 +1006,8 @@ JSON schema: [textstyle.json](extensions/textstyle.json)
 
 ### Theme Definition Extension
 
-- Name: `@ocif/node/theme`
-- URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/theme.json`
+- Name: `@ocif/theme-define`
+- URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/theme-define.json`
 - Usage: On a [node](#nodes).
 
 The theme node extension allows defining and selecting themes.
@@ -1019,12 +1019,12 @@ Example for Using a Theme on the [Root Node](spec.md#root-node):
 {
   "data": [
     {
-      "type": "@ocif/node/theme",
+      "type": "@ocif/theme-define",
       "dark": {
-        "data": [{ "type": "@ocif/node/textstyle", "color": "#FFFFFF" }]
+        "data": [{ "type": "@ocif/textstyle", "color": "#FFFFFF" }]
       },
       "light": {
-        "data": [{ "type": "@ocif/node/textstyle", "color": "#000000" }]
+        "data": [{ "type": "@ocif/textstyle", "color": "#000000" }]
       }
     }
   ]
@@ -1035,10 +1035,14 @@ So the theme branches a node content into several possible worlds and defines an
 
 ### Theme Selection Extension
 
+- Name: `@ocif/theme-use`
+- URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/theme-use.json`
+- Usage: On a [node](#nodes).
+
 Theme selection could happen at the canvas level or at any node in a parent-child inheritance tree. Theme selection inherits downwards. So any node (including the root node) is a good place to select a theme.
-We model this with a `select-theme` property in the same extension.
+We model this with a `selectTheme` property in the same extension.
 The default is selecting no theme, which ignores all theme definitions.
-This default theme can also be selected explicitly further down the parent-child tree by stating `"select-theme": null`.
+This default theme can also be selected explicitly further down the parent-child tree by stating `"selectTheme": null`.
 
 Example for Selecting a Theme on a Node:
 
@@ -1046,8 +1050,8 @@ Example for Selecting a Theme on a Node:
 {
   "data": [
     {
-      "type": "@ocif/node/theme",
-      "select-theme": "dark"
+      "type": "@ocif/theme-use",
+      "selectTheme": "dark"
     }
   ]
 }
@@ -1059,13 +1063,13 @@ Some of these allow expressing entirely structural relationships, like the [edge
 
 ### Inheritance Extension
 
-- Name: `@ocif/rel/parent-child`
+- Name: `@ocif/inherit`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/inherit.json`
 - Usage: On a [node](#nodes).
 
 The inheritance extension lets a node inherit properties from another node.
 Many nodes may inherit from a single node.
-Inheritance MAY NOT from cycles.
+Inheritance MAY NOT form cycles.
 
 | Property      | JSON Type  | OCIF Type        | Required | Contents                                       | Default                  |
 |---------------|------------|------------------|----------|------------------------------------------------|:-------------------------|
@@ -1096,7 +1100,7 @@ JSON schema: [inherit.json](extensions/inherit.json)
 
 ### Page Extension
 
-- Name: `@ocif/node/page`
+- Name: `@ocif/page`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/page.json`
 - Usage: On a [node](#nodes).
 
@@ -1172,6 +1176,11 @@ JSON schema: [group.json](extensions/group.json)
 
 An edge relates two nodes.
 It supports directed and undirected (bi-) edges.
+All features of this extension can be expressed in a [hyperedge](#hyperedge-extension) as well, but this extension has a simpler syntax.
+
+NOTE: Often an arrow shape is used to represent an [edge relation](#edge-extension).
+In this case, on the node where this extension is used, set a `resource` which depicts the arrow shape.
+Or use the [arrow extension](#arrow-extension) to define the arrow programmatically.
 
 It has the following properties:
 
@@ -1193,10 +1202,8 @@ It has the following properties:
   Do not confuse with the `type` of the OCIF extension.
   This field allows representing an RDF triple (subject, predicate, object) as (start,rel,end).
 
-NOTE: Often an arrow shape is used to represent an [edge relation](#edge-extension).
-In this case, on the node where this extension is used, set a `resource` which depicts the arrow shape.
-Or use the [arrow extension](#arrow-extension) to define the arrow programmatically.
-
+A graph with multiple edges should be expressed as multiple OCIF nodes, each having one edge extension.
+Using multiple (hyper-)edge extensions on the same node is discouraged.
 
 JSON schema: [edge.json](extensions/edge.json)
 
@@ -1407,7 +1414,7 @@ _Example_ Node:
       "resource": "berlin-res",
       "data": [
         {
-          "type": "@ocif/node/rect",
+          "type": "@ocif/rect",
           "strokeWidth": 3,
           "strokeColor": "#000000",
           "fillColor": "#00FF00"
@@ -1435,7 +1442,7 @@ _Example_: Node generates this implicit resource (not explicitly present in the 
             resource: "berlin-res",
             data: [
               {
-                type: "@ocif/node/rect",
+                type: "@ocif/rect",
                 strokeWidth: 3,
                 strokeColor: "#000000",
                 fillColor: "#00FF00",
@@ -1527,7 +1534,7 @@ A schema array with two schemas:
   "schemas": [
     {
       "uri": "https://spec.canvasprotocol.org/node/ports/0.2",
-      "name": "@ocif/node/ports"
+      "name": "@ocif/ports"
     },
     {
       "uri": "https://example.com/ns/ocif-node/circle/1.0",
@@ -1541,11 +1548,9 @@ A schema array with two schemas:
 ### Built-in Schema Mappings
 
 The syntax `{var}` denotes placeholders.
-To simplify the use of OCIF, a set of built-in schema mappings is defined:
+To simplify the use of OCIF, a built-in schema mapping is defined:
 
-1. Any [Schema Name](#schema-name) of the form `@ocif/rel/{suffix}` maps to a schema [URI](#uri) `https://spec.canvasprotocol.org/v0.7.0/extensions/{suffix}.json`.
-
-2. A schema name of the form `@ocif/node/{suffix}` maps to a schema URI `https://spec.canvasprotocol.org/v0.7.0/extensions/{suffix}.json`.
+Any [Schema Name](#schema-name) of the form `@ocif/{name}` maps to a schema [URI](#uri) `https://spec.canvasprotocol.org/v0.7.0/extensions/{name}.json`.
 
 Here `v0.7.0` is the current version identifier of the OCIF spec. Later OCIF specs will have different versions and thus different URIs.
 
@@ -1555,7 +1560,7 @@ Built-in Entries:
 {
   "schemas": [
     {
-      "name": "@ocif/node/${ext-type}",
+      "name": "@ocif/${ext-type}",
       "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/${ext-type}.json"
     },
     {
@@ -1625,7 +1630,7 @@ the OCIF-using app should treat this as if the file stated
 This makes combining files by hand easier and uses the same mechanism as the [inheritance extension](#inheritance-extension) and [nested canvases](#nesting-canvases) (when merging host node and imported root node).
 
 For an example of an extension, see the fictional [appendix](#appendix), [Node Extension: Circle](#node-extension-circle).
-In practice, the `@ocif/node/oval` extension can be used.
+In practice, the `@ocif/oval` extension can be used.
 
 ## Defining Extensions
 
@@ -1644,7 +1649,7 @@ Within the repo, there SHOULD be two files:
 - schema.json, which contains the JSON schema for the extension.
   - This schema MUST use the same URI as the extension.
   - It SHOULD have a `description` property, describing briefly the purpose of the extension.
-  - It MAY have a `title`. If a title is used, it should match the proposed short name, e.g. `@ocif/node/oval` or `@ocif/node/ports/v0.7.0`.
+  - It MAY have a `title`. If a title is used, it should match the proposed short name, e.g. `@ocif/oval` or `@ocif/ports/v0.7.0`.
   - If the extension is defined to extend just one kind of element (like all initial extensions), that kind of element SHOULD be part of the name (`node`, `resource` or `canvas`).
 
 As an example, look at the fictitious [Circle Extension](#node-extension-circle) in the appendix.
@@ -1824,44 +1829,44 @@ It is also valid to additionally copy these schema entries in.
 {
   "schemas": [
     {
-      "name": "@ocif/node/anchored-node",
+      "name": "@ocif/anchored-node",
       "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/anchored-node.json"
     },
     {
-      "name": "@ocif/node/arrow",
+      "name": "@ocif/arrow",
       "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/arrow.json"
     },
     {
-      "name": "@ocif/node/oval",
+      "name": "@ocif/edge",
+      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/edge.json"
+    },
+    {
+      "name": "@ocif/hyperedge",
+      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/hyperedge.json"
+    },
+    {
+      "name": "@ocif/inherit",
+      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/inherit.json"
+    },
+    {
+      "name": "@ocif/oval",
       "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/oval.json"
     },
     {
-      "name": "@ocif/node/path",
+      "name": "@ocif/path",
       "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/path.json"
     },
     {
-      "name": "@ocif/node/rect",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/rect.json"
+      "name": "@ocif/ports",
+      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/ports.json"
     },
     {
-      "name": "@ocif/rel/edge",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/edge.json"
+      "name": "@ocif/rect",
+      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/rect.json"
     },
     {
       "name": "@ocif/rel/group",
       "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/group.json"
-    },
-    {
-      "name": "@ocif/rel/hyperedge",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/hyperedge.json"
-    },
-    {
-      "name": "@ocif/rel/parent-child",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/parent-child.json"
-    },
-    {
-      "name": "@ocif/node/ports",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/ports.json"
     }
   ]
 }
@@ -1934,7 +1939,7 @@ A circle has a port at the geometric "top" position.
           "radius": 20
         },
         {
-          "type": "@ocif/node/ports",
+          "type": "@ocif/ports",
           "ports": ["p1"]
         }
       ]
@@ -1948,7 +1953,6 @@ A circle has a port at the geometric "top" position.
 ```
 
 ## OCWG URL Structure (Planned)
-## OCWG URL Structure (Planned)
 
 - `https://canvasprotocol.org` - info site
 - `https://spec.canvasprotocol.org` - specification; REDIRECT to the latest version, e.g. `https://spec.canvasprotocol.org/v0.7.0/spec.md`
@@ -1956,7 +1960,7 @@ A circle has a port at the geometric "top" position.
 - `https://spec.canvasprotocol.org/v0.7.0/schema.json` - General OCIF JSON schema
 - Extension URIs (some selected exemplars):
   - `https://spec.canvasprotocol.org/v0.7.0/extensions/rect.json` - URI for the rectangle extension
-  - `https://spec.canvasprotocol.org/v0.7.0/extensions/edge.json` - URI for the rectangle extension
+  - `https://spec.canvasprotocol.org/v0.7.0/extensions/edge.json` - URI for the edge extension
 
 ## Syntax Conventions
 
@@ -1991,8 +1995,8 @@ A circle has a port at the geometric "top" position.
 - Move _parent-child-relation_ to main extensions.
 - Define how to read and combine multiple extensions of the same type
 - Fix some typos
-- Updated extension versioning (but not core extensions) to use explicit version numbers (e.g., `@ocif/node/ports/0.4.1`)
-- Moved `@ocif/node/parent-child` from extensions to core
+- Updated extension versioning (but not core extensions) to use explicit version numbers (e.g., `@ocif/ports/0.4.1`)
+- Moved `@ocif/parent-child` from extensions to core
 - Added _page node extension_.
 - Clarification on fillColor
 - Conflict Resolution for Node Transforms
@@ -2002,7 +2006,7 @@ A circle has a port at the geometric "top" position.
 
 **Core Specification Changes:**
 
-- Removed `node.scale` property - moved to `@ocif/node/transforms` extension
+- Removed `node.scale` property - moved to `@ocif/transforms` extension
 - Added `node.resource-fit` property for controlling resource display within nodes
 - Added OCIF type `Vector` with support for 2D/3D vectors and scalar shortcuts
 - Made `type` property required for all core node and relation extensions
@@ -2011,11 +2015,11 @@ A circle has a port at the geometric "top" position.
 **Extension Changes:**
 
 - Removed `@ocif/rel/set` relation - merged functionality into `@ocif/rel/group`
-- Added `cascadeDelete` property to group relations
-- Removed deprecated `@ocif/node/relative` extension - functionality moved to `@ocif/node/transforms`
-- Added `@ocif/node/anchored` - percentage-based positioning relative to parent bounds
-- Added `@ocif/node/textstyle` - font styling properties for text rendering
-- Added `@ocif/node/transforms` - geometric transforms including scale, offset, and rotation
+- Added `cascadeDelete` property to group relationsAdd
+- Removed deprecated `@ocif/relative` extension - functionality moved to `@ocif/transforms`
+- Added `@ocif/anchored` - percentage-based positioning relative to parent bounds
+- Added `@ocif/textstyle` - font styling properties for text rendering
+- Added `@ocif/transforms` - geometric transforms including scale, offset, and rotation
 
 ### From v0.3 to v0.4
 

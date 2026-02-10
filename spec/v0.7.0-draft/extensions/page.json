@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "@ocif/node/page",
+  "title": "@ocif/page",
   "description": "Page node extension. Gives nodes page numbers and/or a page label.",
   "type": "object",
   "properties": {
     "type": {
       "type": "string",
-      "const": "@ocif/node/page"
+      "const": "@ocif/page"
     },
     "pageNumber": {
       "type": "number",

@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "@ocif/node/oval",
+  "title": "@ocif/oval",
   "description": "Oval node extension",
   "type": "object",
   "properties": {
     "type": {
       "type": "string",
-      "const": "@ocif/node/oval"
+      "const": "@ocif/oval"
     },
     "strokeWidth": {
       "type": "number",

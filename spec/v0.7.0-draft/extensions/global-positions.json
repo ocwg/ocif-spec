@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "@ocif/node/global-positions",
+  "title": "@ocif/global-positions",
   "description": "Global node coordinates",
   "type": "object",
   "properties": {
     "type": {
       "type": "string",
-      "const": "@ocif/node/global-positions"
+      "const": "@ocif/global-positions"
     },
     "globalPosition": {
       "type": "array",

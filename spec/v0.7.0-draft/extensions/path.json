@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "@ocif/node/path",
+  "title": "@ocif/path",
   "description": "Path node extension",
   "type": "object",
   "properties": {
     "type": {
       "type": "string",
-      "const": "@ocif/node/path"
+      "const": "@ocif/path"
     },
     "strokeWidth": {
       "type": "number",
