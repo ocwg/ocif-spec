@@ -10,7 +10,8 @@
     },
     "pageNumber": {
       "type": "number",
-      "description": "The page number."
+      "description": "The page number.",
+      "default": 1
     },
     "label": {
       "type": "string",

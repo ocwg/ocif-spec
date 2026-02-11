@@ -13,18 +13,21 @@
       "description": "Global coordinate as (x,y) or (x,y,z).",
       "items": {
         "type": "number"
-      }
+      },
+      "default": [0, 0]
     },
     "globalSize": {
       "type": "array",
       "description": "The global size of the node per dimension.",
       "items": {
         "type": "number"
-      }
+      },
+      "default": [100, 100]
     },
     "globalRotation": {
       "type": "number",
-      "description": "+/- 360 degrees"
+      "description": "+/- 360 degrees",
+      "default": 0
     }
   },
   "required": ["type","globalPosition","globalSize","globalRotation"]

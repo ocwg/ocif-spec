@@ -20,11 +20,13 @@
           "direction": {
             "type": "string",
             "description": "Direction of the connection: 'in' (edge is going into the hyper-edge), 'out' (edge is going out from thy hyper-edge), 'undir' (edge is attached undirected). This is the default.",
-            "enum": ["in", "out", "undir"]
+            "enum": ["in", "out", "undir"],
+            "default": "undir"
           },
           "weight": {
             "type": "number",
-            "description": "Weight of the edge"
+            "description": "Weight of the edge",
+            "default": 1.0
           }
         },
         "required": ["id"]
@@ -32,7 +34,8 @@
     },
     "weight": {
       "type": "number",
-      "description": "Weight of the edge. A floating-point number, which can be used to model the strength of the connection, as a whole. More general than endpoint-specific weights, and often sufficient."
+      "description": "Weight of the edge. A floating-point number, which can be used to model the strength of the connection, as a whole. More general than endpoint-specific weights, and often sufficient.",
+      "default": 1.0
     },
     "rel": {
       "type": "string",

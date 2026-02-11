@@ -10,11 +10,13 @@
     },
     "strokeWidth": {
       "type": "number",
-      "description": "The line width."
+      "description": "The line width.",
+      "default": 1
     },
     "strokeColor": {
       "type": "string",
-      "description": "The color of the stroke."
+      "description": "The color of the stroke.",
+      "default": "#FFFFFF"
     },
     "fillColor": {
       "type": "string",
@@ -41,12 +43,14 @@
     "startMarker": {
       "type": "string",
       "enum": ["none", "arrowhead"],
-      "description": "The marker at the start of the arrow."
+      "description": "The marker at the start of the arrow.",
+      "default": "none"
     },
     "endMarker": {
       "type": "string",
       "enum": ["none", "arrowhead"],
-      "description": "The marker at the end of the arrow."
+      "description": "The marker at the end of the arrow.",
+      "default": "none"
     },
     "relation": {
       "type": "string",

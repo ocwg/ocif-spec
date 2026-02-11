@@ -10,11 +10,13 @@
     },
     "strokeWidth": {
       "type": "number",
-      "description": "The line width."
+      "description": "The line width.",
+      "default": 1
     },
     "strokeColor": {
       "type": "string",
-      "description": "The color of the stroke."
+      "description": "The color of the stroke.",
+      "default": "#FFFFFF"
     },
     "fillColor": {
       "type": "string",

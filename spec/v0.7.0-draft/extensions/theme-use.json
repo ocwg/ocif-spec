@@ -11,7 +11,8 @@
     },
     "selectTheme": {
       "description": "The name of the theme to select. Use null to select no theme (default), which ignores all theme definitions.",
-      "type": ["string", "null"]
+      "type": ["string", "null"],
+      "default": null
     }
   },
   "required": ["type", "selectTheme"]
