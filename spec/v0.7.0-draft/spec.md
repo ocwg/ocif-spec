@@ -679,7 +679,7 @@ Later entries overwrite earlier entries for the same `type` of extension.
 
 #### Partial Export
 
-NOTE: When exporting a node from a canvas (and all its child nodes per parent-child relation), that node should become the root node of the exported sub-canvas. For consistency, all effective values, which may be inherited, need to be copied onto the exported root node.
+NOTE: When exporting a node from a canvas (and all its child nodes per parent-child relation), that node should become the root node of the exported sub-canvas. For consistency, all effective values, which may be inherited, need to be copied onto the exported root node. However, `position`, `rotation`, `rotationAxis`, and `parent` MUST be removed from the new root node, as the root defines the origin (0,0) of the new canvas.
 
 # Node Extensions
 
@@ -943,7 +943,8 @@ The node can have these properties:
 
 - **globalRotation**: The absolute, global 2D rotation of the node in degrees. The rotation center is the positioned point, i.e., top-left. The z-axis is not modified.
 
-Note that a _rotation axis_ is not required. The global rotation can always be expressed with respect to the standard z-axis `[0,0,1]`, which is placed in the top-left corner of the node.
+In 2D, a _rotation axis_ is not required.
+A global 2D rotation can be expressed with respect to the standard z-axis `[0,0,1]`, which is placed in the top-left corner of the node.
 
 If the global positions disagree with the computed positions (by an app both capable of calculating the global positions and processing the global-positions extension), the computed positions should be used. Ideally, the global positions should then be fixed with the calculated values.
 For interactive editing, if a parent node is modified, the application SHOULD recalculate and update the global position of its children. If a conflict is detected on the initial loading, a warning SHOULD be issued, and the local position MUST be preferred.
@@ -1343,11 +1344,13 @@ Each _Representation_ object has the following properties:
 | `data`     | `array`   | [Extension](#extensions) | optional  | Additional data for the representation. |
 | `comment`  | `string`  |                          | optional  | A comment about the representation.     |
 
-Either `content` or `location` MUST be present. If `content` is used, `location` must be left out and vice versa.
+Either `content` or `location` MUST be present.
+If `content` is used, `location` must be left out and vice versa.
 
 - **location**: The storage location for the resource.
   This can be a relative URI for an external resource or an absolute URI for a remote resource.
-  - If a `data:` URI is used, the `content` and `mimeType` properties are implicitly defined already. Values in `content` and `mimeType` are ignored.
+  - If a `data:` URI is used, the `content` and `mimeType` properties are implicitly defined already.
+    Values in `content` and `mimeType` are ignored.
 - **mimeType**: The IANA MIME Type of the resource. See [MIME Type](#mime-type) for details.
 - **content**: The content of the resource.
   This is the actual data of the resource as a string.
@@ -1358,11 +1361,11 @@ Valid resource representations are
 
 |                 | `location`                      | `mimeType`                                                 | `content`          |
 |:----------------|---------------------------------|------------------------------------------------------------|--------------------|
-| Inline text     | Ignored, `content` is set       | E.g. `text/plain` or `image/svg+xml`                       | Text/SVG as string |
-| Inline binary   | Ignored, `content` is set       | E.g. `image/png`                                           | Base64             |
-| Remote          | `https://example.com/sunny.png` | Optional; obtained from HTTP response                      | Ignored            |
-| External        | `images/sunny.png`              | Recommended; only guessable from file extension or content | Ignored            |
-| Remote data URI | `data:image/png;base64,...`     | Ignored; present in URI                                    | Ignored            |
+| Inline text     | Invalid, `content` is set       | E.g. `text/plain` or `image/svg+xml`                       | Text/SVG as string |
+| Inline binary   | Invalid, `content` is set       | E.g. `image/png`                                           | Base64             |
+| Remote          | `https://example.com/sunny.png` | Optional; obtained from HTTP response                      | Invalid            |
+| External        | `images/sunny.png`              | Recommended; only guessable from file extension or content | Invalid            |
+| Remote data URI | `data:image/png;base64,...`     | Invalid; present in URI                                    | Invalid            |
 
 **Example:** A resource stored inline:
 
@@ -1566,24 +1569,19 @@ To simplify the use of OCIF, a built-in schema mapping is defined:
 
 Any [Schema Name](#schema-name) of the form `@ocif/{name}` maps to a schema [URI](#uri) `https://spec.canvasprotocol.org/v0.7.0/extensions/{name}.json`.
 
-Here `v0.7.0` is the current version identifier of the OCIF spec. Later OCIF specs will have different versions and thus different URIs.
-
-Built-in Entries:
-
+**Mapping** \
 ```json
 {
   "schemas": [
     {
-      "name": "@ocif/${ext-type}",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/${ext-type}.json"
-    },
-    {
-      "name": "@ocif/${ext-type}",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/${ext-type}.json"
+      "name": "@ocif/${name}",
+      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/${name}.json"
     }
   ]
 }
 ```
+
+Here `v0.7.0` is the current version identifier of the OCIF spec. Later OCIF specs will have different versions and thus different URIs.
 
 These mappings SHOULD be materialized into the OCIF JSON schema.
 
@@ -1786,7 +1784,7 @@ A `string` that represents a Uniform Resource Identifier (URI) as defined in [RF
 The whole canvas is interpreted either as 2D or 3D.
 
 - A 3D vector is represented using an `array` with three `number` in them, with `v[0]` as _x_, `v[1]` as _y_, and `v[2]` as _z_.
-- A 2D vector is represented using an `array` with two `number` in them, with `v[0]` as _x_ and `v[1]` as _y_. In 2D, the z-axis coordinate SHOULD be used for relative z-index ordering of 2D shapes. An application MAY also ignore the z-axis. A 2D vector interpreted as 3D is auto-extend with z-axis set to `0`.
+- A 2D vector is represented using an `array` with two `number` in them, with `v[0]` as _x_ and `v[1]` as _y_. In 2D, the z-axis coordinate SHOULD be used for relative z-index ordering of 2D shapes. An application MAY also ignore the z-axis. A 2D vector interpreted as 3D is auto-extended with z-axis set to `0`, unless used for `scale`, where it defaults to `1`.
 
 - Syntax shortcut: A vector given as a single number, e.g. `3` is auto-extended to apply uniformly to all dimensions, e.g., `[3,3,3]`. This is most useful for a `scale` factor.
 
