@@ -403,7 +403,7 @@ A _Node_ is an `object` with the following properties:
 - **[structural](#structural-properties)** (`id` (required),`parent`, `deleteWithParent`),
 - **[layout](#layout-properties)** (`position`, `size`, `rotation`, `rotationAxis`, `scale`),
 - **[content](#content-properties)** (`resource`, `resourceFit`), and
-
+- **[extension](#extension-properties)** (`data`, `comment`).
 
 
 ## Structural Properties
