@@ -714,7 +714,7 @@ z-order: The stroke (`strokeWidth`, `strokeColor`) SHOULD be rendered "on top" o
 So a _fillColor_ can be used for a background color.
 
 These properties are meant to customize the built-in default stroke of a canvas app.
-I.e., if all shapes in a canvas app are red and a node is using the rectangle extension but defines no color, the node should be red as well. The defaults listed in the table are just examples and can be different in different canvas apps.
+For example, if all shapes in a canvas app are red and a node is using the rectangle extension but defines no color, the node should be red as well.
 
 JSON schema: [rect.json](extensions/rect.json)
 
