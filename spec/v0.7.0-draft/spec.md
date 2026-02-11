@@ -552,11 +552,11 @@ Content is specified with these properties:
     - `containY`: Scaled by keeping the aspect ratio, so that the image height matches the item height. This results in the image being displayed at a scale of `0.1`, so that it is 100 px high and 100 px wide. The image is now fully visible, but there are boxes of empty space left and right of the horizontally centered image.
       Never crops the image.
       NOTE: This is called `keep-height` in Godot.
-    - `contain`: Scaled by keeping the aspect ratio of the image, so that the image fits into the item for both height and width.
-      The image is auto-centered vertically and horizontally.
-      Empty space left and right _or_ top and bottom might appear.
-      Never crops the image.
-      NOTE: This is identical to auto-selecting one of the two previous options.
+      - `contain`: Scaled by keeping the aspect ratio of the image, so that the image fits into the item for both height and width.
+        The image is auto-centered vertically and horizontally.
+        Empty space left and right _or_ top and bottom might appear.
+        Never crops the image.
+        This is equivalent to applying the smaller of the scale factors calculated for `containX` and `containY`.
       This is called 'keep aspect centered' in Godot.
     - `cover`: Scaled by keeping the aspect ratio of the image, so that the image fits into the item for one of height and width while the other dimension overlaps. The overlap is cropped away and not visible. The entire view area is filled.
     - `fill`: Aspect ratio is ignored and the image is simply stretched to match the width and height of the view box.
