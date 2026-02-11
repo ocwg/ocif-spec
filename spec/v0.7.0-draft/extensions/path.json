@@ -25,5 +25,5 @@
       "description": "The path data in SVG 'd' attribute syntax."
     }
   },
-  "required": ["path"]
+  "required": ["type",,"path"]
 }

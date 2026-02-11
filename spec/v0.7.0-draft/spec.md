@@ -314,7 +314,7 @@ Example:
 {
   "ocif": "https://canvasprotocol.org/ocif/v0.7.0",
   "data": [
-    { "type": "@ocif/canvas/viewport",
+    { "type": "@ocif/canvas-viewport",
       "position": [0, 0],
       "size": [1000, 800]
     }
@@ -328,8 +328,8 @@ Example:
 
 The initial _viewport_ of an OCIF file can be defined with this viewport extension.
 
-- Name: `@ocif/canvas/viewport`
-- URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/viewport-canvas.json`
+- Name: `@ocif/canvas-viewport`
+- URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/canvas-viewport.json`
 - Usage: On the canvas (the OCIF document).
 
 A viewport is a rectangle that defines at what part of a canvas the app should initially pan and zoom.
@@ -352,7 +352,7 @@ NOTE: To achieve this, the application should calculate a zoom factor as min(can
 - **size**:
   The width and height (in 3D: also depth) of the viewport.
 
-JSON schema: [viewport-canvas.json](extensions/viewport-canvas.json)
+JSON schema: [canvas-viewport.json](extensions/canvas-viewport.json)
 
 
 
@@ -492,7 +492,7 @@ This is **x-axis** ("width" at position `0`), **y-axis** ("height" at position `
 
 **Practical Advice**\
 For interactive apps, the transforms allow to adapt on parent changes.
-Furthermore, when zooming very large maps, position and size should be computed on the fly using node transforms, as global positions would become unstable due to numeric precision.
+Furthermore, when zooming very large maps, position and size should be computed on the fly, as global positions would become unstable due to numeric precision.
 
 
 **Example:** A node with a scale factor:
@@ -1125,7 +1125,7 @@ However, it may have a number of page nodes (nodes with the page node extension)
 
 ### Group Extension
 
-- Name: `@ocif/rel/group`
+- Name: `@ocif/group`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/group.json`
 - Usage: On a [node](#nodes).
 
@@ -1154,7 +1154,7 @@ A group has the following properties in its `data` object:
   "id": "letter_named_nodes",
   "data": [
     {
-      "type": "@ocif/rel/group",
+      "type": "@ocif/group",
       "members": ["A", "B", "C"]
     }
   ]
@@ -1170,7 +1170,7 @@ JSON schema: [group.json](extensions/group.json)
 
 ### Edge Extension
 
-- Name: `@ocif/rel/edge`
+- Name: `@ocif/edge`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/edge.json`
 - Usage: On a [node](#nodes).
 
@@ -1210,7 +1210,7 @@ JSON schema: [edge.json](extensions/edge.json)
 
 ### Hyperedge Extension
 
-- Name: `@ocif/rel/hyperedge`
+- Name: `@ocif/hyperedge`
 - URI: `https://spec.canvasprotocol.org/v0.7.0/extensions/hyperedge.json`
 - Usage: On a [node](#nodes).
 
@@ -1271,7 +1271,7 @@ An hyperedge connecting two nodes as input (n1,n2) with one node as output (n3).
 
 ```json
 {
-  "type": "@ocif/rel/hyperedge",
+  "type": "@ocif/hyperedge",
   "endpoints": [
     { "id": "n1", "direction": "in" },
     { "id": "n2", "direction": "in" },
@@ -1564,7 +1564,7 @@ Built-in Entries:
       "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/${ext-type}.json"
     },
     {
-      "name": "@ocif/rel/${ext-type}",
+      "name": "@ocif/${ext-type}",
       "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/${ext-type}.json"
     }
   ]
@@ -1828,46 +1828,23 @@ It is also valid to additionally copy these schema entries in.
 ```json
 {
   "schemas": [
-    {
-      "name": "@ocif/anchored-node",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/anchored-node.json"
-    },
-    {
-      "name": "@ocif/arrow",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/arrow.json"
-    },
-    {
-      "name": "@ocif/edge",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/edge.json"
-    },
-    {
-      "name": "@ocif/hyperedge",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/hyperedge.json"
-    },
-    {
-      "name": "@ocif/inherit",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/inherit.json"
-    },
-    {
-      "name": "@ocif/oval",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/oval.json"
-    },
-    {
-      "name": "@ocif/path",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/path.json"
-    },
-    {
-      "name": "@ocif/ports",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/ports.json"
-    },
-    {
-      "name": "@ocif/rect",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/rect.json"
-    },
-    {
-      "name": "@ocif/rel/group",
-      "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/group.json"
-    }
+    { "name": "@ocif/anchored-node", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/anchored-node.json" },
+    { "name": "@ocif/arrow", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/arrow.json" },
+    { "name": "@ocif/canvas-viewport", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/canvas-viewport.json" },
+    { "name": "@ocif/data", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/data.json" },
+    { "name": "@ocif/edge", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/edge.json" },
+    { "name": "@ocif/global-positions", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/global-positions.json" },
+    { "name": "@ocif/group", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/group.json"  },
+    { "name": "@ocif/hyperedge", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/hyperedge.json" },
+    { "name": "@ocif/inherit", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/inherit.json" },
+    { "name": "@ocif/oval", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/oval.json" },
+    { "name": "@ocif/page", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/page.json" },
+    { "name": "@ocif/path", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/path.json" },
+    { "name": "@ocif/ports", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/ports.json" },
+    { "name": "@ocif/rect", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/rect.json" },
+    { "name": "@ocif/textstyle", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/textstyle.json" },
+    { "name": "@ocif/theme-define", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/theme-define.json" },
+    { "name": "@ocif/theme-use", "uri": "https://spec.canvasprotocol.org/v0.7.0/extensions/theme-use.json" }
   ]
 }
 ```
@@ -1974,11 +1951,12 @@ A circle has a port at the geometric "top" position.
 
 - Merged **node** and **relation**.
 - Conceptually merged **Node Transforms Extension** into default node properties:
-    - Removed Node Transforms `offset`, `rotation`, `rotationAxis`, `scale`
+    - Moved Node Transforms properties into core node properties  `offset` (-> position), `rotation`, `rotationAxis`, `scale`
     - Changed semantics of node `position`, `size`, `rotation`: they are now interpreted in the local coordinate system (previously global).
-    - Added node `rotationAxis`, `scale`.
     - Added new node extension **global-positions**, with properties `globalPosition`, `globalSize` and `globalRotation` to store pre-computed values.
-- Extensions can now be used on canvas, node, resources and representations.
+- Extensions can now be used on canvas, node, resources, and representations.
+- Renamed all @ocif extension to a uniform, simpler naming scheme (type `@ocif/foo-bar` is in `/extensions/foo-bar.json`). This drops the former `node` and `rel` parts of names.
+- Renamed @ocif type and schema name uniformly to `canvas-viewport` for the [canvas-viewport](#canvas-viewport) extension.
 
 **Minor**
 

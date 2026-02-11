@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "@ocif/rel/parent-child",
+  "title": "@ocif/inherit",
   "description": "Parent-child relationship extension. A parent-child relation models a hierarchical relationship between nodes. It can be used to model inheritance, containment, or other hierarchical relationships.",
   "type": "object",
   "properties": {
     "type": {
       "type": "string",
-      "const": "@ocif/rel/parent-child"
+      "const": "@ocif/inherit"
     },
     "inheritFrom": {
       "type": "string",
