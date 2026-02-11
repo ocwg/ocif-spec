@@ -494,6 +494,13 @@ This is **x-axis** ("width" at position `0`), **y-axis** ("height" at position `
 For interactive apps, the transforms allow to adapt on parent changes.
 Furthermore, when zooming very large maps, position and size should be computed on the fly, as global positions would become unstable due to numeric precision.
 
+**Calculating Global Positions**\
+The 2D box (or in 3D: cube) defined by `position` and `size` is mapped to global coordinates.
+The full transformation matrix is 'TRS' ordered: M = T * R * S.
+So first scale (S, `scale`) is applied, then rotation (R, `rotation`,`rotationAxis`).
+OCIF has no translation (T).
+
+
 
 **Example:** A node with a scale factor:
 
