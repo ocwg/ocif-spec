@@ -829,8 +829,15 @@ The rendering of resources inside a path is not defined by OCIF, but by the canv
   - `A rx ry x-axis-rotation large-arc-flag sweep-flag x y`: Arc to x, y with radii rx, ry, x-axis-rotation, large-arc-flag, sweep-flag
   - `Z`: Close the path
   - The starting point of the path is the top-left corner of the node, i.e., the positioned point.
+  - Coordinates are expressed in the nodes local coordinate system.
 
 NOTE: Canvas apps can simplify rendering of curves (cubic/quadratic bezier, arc) to straight lines.
+
+This extension if on purpose very similar to SVG. Attaching a SVG [resource](#resources) to a node has a very similar visual effect.
+Some differences are: resources can be re-used in other nodes, SVGs add a bit more overhead to an app compared to this path extension.
+SVG resources allow more precise positioning using the `resourceFit` property, and have an additional SVG `viewbox`.
+Overall, SVG has many more features compared to the path extension.
+The path extension might be superior for apps that allow inline editing of paths, like in a scribble.
 
 JSON schema: [path.json](extensions/path.json)
 
