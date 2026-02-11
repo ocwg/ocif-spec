@@ -1358,7 +1358,7 @@ Valid resource representations are
 
 |                 | `location`                      | `mimeType`                                                 | `content`          |
 |:----------------|---------------------------------|------------------------------------------------------------|--------------------|
-| Inline text     | Ignored, `content` is set       | E..g. `text/plain` or `image/svg+xml`                      | Text/SVG as string |
+| Inline text     | Ignored, `content` is set       | E.g. `text/plain` or `image/svg+xml`                       | Text/SVG as string |
 | Inline binary   | Ignored, `content` is set       | E.g. `image/png`                                           | Base64             |
 | Remote          | `https://example.com/sunny.png` | Optional; obtained from HTTP response                      | Ignored            |
 | External        | `images/sunny.png`              | Recommended; only guessable from file extension or content | Ignored            |
