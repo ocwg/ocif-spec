@@ -75,17 +75,49 @@
       "properties": {
         "position": {
           "type": "array",
-          "description": "Coordinate as (x,y) or (x,y,z).",
+          "description": "Local coordinate as (x,y) or (x,y,z), relative to the parent coordinate system.",
           "items": {
             "type": "number"
-          }
+          },
+          "default": [0, 0]
         },
         "size": {
           "type": "array",
-          "description": "The size of the node per dimension.",
+          "description": "The size of the node per dimension, within its local coordinate system.",
           "items": {
             "type": "number"
-          }
+          },
+          "default": [100, 100]
+        },
+        "scale": {
+          "description": "Scale factor for the node. The array contains the scale factor for each dimension.",
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          ],
+          "default": 1
+        },
+        "rotation": {
+          "type": "number",
+          "description": "Relative angle in degrees [+/- 360]. The rotation is added to the rotation of parent coordinate system.",
+          "default": 0
+        },
+        "rotationAxis": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3,
+          "description": "Rotation axis for 3D rotation. Default is [0,0,1] (z-axis).",
+          "default": [0, 0, 1]
         },
         "resource": {
           "type": "string",
@@ -94,11 +126,8 @@
         "resourceFit": {
           "type": "string",
           "description": "Fitting resource in item",
-          "enum": ["none", "containX", "containY", "contain", "cover", "fill", "tile"]
-        },
-        "rotation": {
-          "type": "number",
-          "description": "+/- 360 degrees"
+          "enum": ["none", "containX", "containY", "contain", "cover", "fill", "tile"],
+          "default": "contain"
         },
         "relation": {
           "type": "string",

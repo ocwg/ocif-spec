@@ -1,12 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "@ocif/rel/group",
+  "title": "@ocif/group",
   "description": "Group relation extension",
   "type": "object",
   "properties": {
     "type": {
       "type": "string",
-      "const": "@ocif/rel/group",
+      "const": "@ocif/group",
       "description": "Identifies the group relation extension."
     },
     "members": {

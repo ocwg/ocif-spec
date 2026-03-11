@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://spec.canvasprotocol.org/v0.7.0/extensions/anchored-node.json",
-  "title": "@ocif/node/anchored",
+  "title": "@ocif/anchored-node",
   "description": "Anchored node extension for relative positioning anchored to a parent item",
   "type": "object",
   "properties": {
     "type": {
       "type": "string",
-      "const": "@ocif/node/anchored"
+      "const": "@ocif/anchored-node"
     },
     "topLeftAnchor": {
       "description": "Top left anchor as percentage coordinates",

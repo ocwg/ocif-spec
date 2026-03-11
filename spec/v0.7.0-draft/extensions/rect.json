@@ -1,20 +1,22 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "@ocif/node/oval",
-  "description": "Oval node extension",
+  "title": "@ocif/rect",
+  "description": "Rectangle node extension",
   "type": "object",
   "properties": {
     "type": {
       "type": "string",
-      "const": "@ocif/node/oval"
+      "const": "@ocif/rect"
     },
     "strokeWidth": {
       "type": "number",
-      "description": "The line width."
+      "description": "The line width.",
+      "default": 1
     },
     "strokeColor": {
       "type": "string",
-      "description": "The color of the stroke."
+      "description": "The color of the stroke.",
+      "default": "#FFFFFF"
     },
     "fillColor": {
       "type": "string",

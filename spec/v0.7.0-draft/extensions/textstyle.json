@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://spec.canvasprotocol.org/v0.7.0/extensions/textstyle-node.json",
-  "title": "@ocif/node/textstyle",
+  "$id": "https://spec.canvasprotocol.org/v0.7.0/extensions/textstyle.json",
+  "title": "@ocif/textstyle",
   "description": "Text style extension for rendering plain text and structured text",
   "type": "object",
   "properties": {
     "type": {
       "type": "string",
-      "const": "@ocif/node/textstyle"
+      "const": "@ocif/textstyle"
     },
     "fontSizePx": {
       "description": "Font size in px, as used in CSS",

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://spec.canvasprotocol.org/v0.7.0/extensions/theme-def.json",
+  "title": "@ocif/theme-def",
+  "description": "Theme definition extension. Allows defining named themes with node properties that apply when the theme is selected.",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "@ocif/theme-def"
+    }
+  },
+  "additionalProperties": {
+    "description": "Named theme definitions. Each theme is an object containing node properties (including a data array with extensions) that apply when the theme is selected.",
+    "type": "object",
+    "properties": {
+      "data": {
+        "description": "Array of extensions to apply when this theme is selected",
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      }
+    },
+    "additionalProperties": true
+  },
+  "required": ["type"]
+}
