@@ -911,6 +911,8 @@ A global 2D rotation can be expressed with respect to the standard z-axis `[0,0,
 If the global positions disagree with the computed positions (by an app both capable of calculating the global positions and processing the global-positions extension), the computed positions should be used. Ideally, the global positions should then be fixed with the calculated values.
 For interactive editing, if a parent node is modified, the application SHOULD recalculate and update the global position of its children. If a conflict is detected on the initial loading, a warning SHOULD be issued, and the local position MUST be preferred.
 
+JSON schema: [global-positions.json](extensions/global-positions.json)
+
 ### Anchored Node Extension
 
 - Name: `@ocif/anchored-node`
@@ -1007,6 +1009,8 @@ Example for Using a Theme on the [Root Node](spec.md#root-node):
 
 So the theme branches a node content into several possible worlds and defines any values, including those in extensions.
 
+JSON schema: [theme-define.json](extensions/theme-define.json)
+
 ### Theme Selection Extension
 
 - Name: `@ocif/theme-use`
@@ -1030,6 +1034,8 @@ Example for Selecting a Theme on a Node:
   ]
 }
 ```
+
+JSON schema: [theme-use.json](extensions/theme-use.json)
 
 ## Structural Extensions
 
@@ -1094,6 +1100,8 @@ Several infinite canvas tools have a built-in page concept.
 
 NOTE: When combined with the _root node_ concept, the root node is usually _not_ a page.
 However, it may have a number of page nodes (nodes with the page node extension) as child nodes (as indicated by the parent-child relation).
+
+JSON schema: [page.json](extensions/page.json)
 
 ### Group Extension
 
