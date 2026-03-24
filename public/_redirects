@@ -1,9 +1,17 @@
 # Redirect root to latest version of spec
 / https://github.com/ocwg/spec/blob/main/spec/v0.7.0/spec.md 302
 
-# Short version aliases (e.g. /v0.6 → /v0.6.0)
-/v0.6/* /v0.6.0/:splat 301
-/v0.6 /v0.6.0 301
+# Short version aliases: vX.Y.0 → vX.Y (files stored without patch version)
+/v0.2.0/* /v0.2/:splat 301
+/v0.2.0 /v0.2 301
+/v0.3.0/* /v0.3/:splat 301
+/v0.3.0 /v0.3 301
+/v0.5.0/* /v0.5/:splat 301
+/v0.5.0 /v0.5 301
+/v0.6.0/* /v0.6/:splat 301
+/v0.6.0 /v0.6 301
+
+# Short version alias: vX.Y → vX.Y.0 (file stored with patch version)
 /v0.7/* /v0.7.0/:splat 301
 /v0.7 /v0.7.0 301
 
