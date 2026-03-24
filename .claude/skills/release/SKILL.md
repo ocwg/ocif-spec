@@ -31,6 +31,7 @@ Work through each phase **in order**. Confirm with the user before proceeding to
 1. Rename the draft directory: `git mv spec/$ARGUMENTS-draft spec/$ARGUMENTS`
 2. Inside `spec/$ARGUMENTS/`, search for references to the old draft path (`$ARGUMENTS-draft`) and update them to `$ARGUMENTS`.
 3. Inside `spec/$ARGUMENTS/spec.md`, verify the version URI is correct (e.g. `https://canvasprotocol.org/ocif/$ARGUMENTS`). Update if it still says "draft".
+4. Inside `spec/$ARGUMENTS/spec.md`, update the date on line 3 (e.g. `**OCWG Candidate Recommendation, April 2025**`) to the current month and year.
 
 ## Phase 3: Update Version Pointers
 
