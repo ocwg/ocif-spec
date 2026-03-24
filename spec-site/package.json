@@ -1,0 +1,13 @@
+{
+  "name": "ocif-spec-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.js && vitepress build",
+    "dev": "node scripts/build.js && vitepress dev",
+    "preview": "vitepress preview"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.3"
+  }
+}
