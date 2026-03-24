@@ -451,13 +451,11 @@ The resulting position, scale, and rotation computation requires computing first
 
 - **size**: The size of the node per dimension.
   This is **x-axis** ("width" at position `0`), **y-axis** ("height" at position `1`), and **z-axis** ("depth" at position `2`). The size is expressed in the local coordinate system of the node.
-
-      - Size might be omitted if a linked resource defines the size.
-        More precisely: if _all_ [resource representations](#representation) define a size.
-          - Raster images, such as PNG and JPEG, define their size in pixels.
-          - Vector images, such as SVG, can have a `viewbox` defined, but may also omit it.
-          - Text can be wrapped at any width, so a size property is required.
-      - In general, a size property is useful as a fallback to display a placeholder rectangle if the resource cannot be displayed as intended.
+  - Size might be omitted if a linked resource defines the size. More precisely: if _all_ [resource representations](#representation) define a size.
+  - Raster images, such as PNG and JPEG, define their size in pixels.
+  - Vector images, such as SVG, can have a `viewbox` defined, but may also omit it.
+  - Text can be wrapped at any width, so a size property is required.
+  - In general, a size property is useful as a fallback to display a placeholder rectangle if the resource cannot be displayed as intended.
 
 - **scale**: A number-vector (floating-point) to override (set) the automatic scale factor of the node. This defines the scale of the local coordinate system. A larger scale SHOULD also affect font sizes. The scale factors are multiplied component-wise to the parent coordinate system.
   - NOTE: The scale factors cannot be computed from global positions alone.
