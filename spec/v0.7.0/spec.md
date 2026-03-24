@@ -1,6 +1,6 @@
 # Open Canvas Interchange Format (OCIF)
 
-**OCWG Candidate Recommendation, April 2025**
+**OCWG Candidate Recommendation, March 2026**
 
 **This version:** \
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; https://spec.canvasprotocol.org/v0.7.0 \
