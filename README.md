@@ -1,7 +1,7 @@
 # OCIF (Open Canvas Interchange Format) Spec
 
 ## ⚒️ Status: Seeking Implementation Feedback
-The [spec](./spec/v0.6/spec.md) is in the *"Candidate Recommendation"* stage, which means it has been widely reviewed and satisfies OCWG's technical requirements. We are currently gathering implementation experience.
+The [spec](./spec/v0.7.0/spec.md) is in the *"Candidate Recommendation"* stage, which means it has been widely reviewed and satisfies OCWG's technical requirements. We are currently gathering implementation experience.
 
 We welcome any feedback and implementations.
 
@@ -13,15 +13,15 @@ When releasing a new version of the OCIF specification, follow these steps:
 
 ### 1. Prepare the Release
 
-See [detailed technical release instructions](./spec/v0.5/how-to-spec.md#release-instructions) for the complete Git workflow, including:
+See [detailed technical release instructions](./spec/v0.7.0/how-to-spec.md#release-instructions) for the complete Git workflow, including:
 - Creating and managing draft versions
 - Updating `public/_redirects` to point spec.canvasprotocol.org to the new version
 - Updating version numbers across Cookbook, Catalog, Examples, and README
 
 Quick checklist:
 - [ ] Follow the technical release steps in how-to-spec.md
-- [ ] Create a git tag for the release (e.g., `v0.6`)
-- [ ] Push the tag to GitHub: `git push origin v0.6`
+- [ ] Create a git tag for the release (e.g., `v0.7.0`)
+- [ ] Push the tag to GitHub: `git push origin v0.7.0`
 
 ### 2. Update Website
 
