@@ -84,6 +84,10 @@ Once the user confirms the PR has been merged:
    git tag $ARGUMENTS
    git push origin $ARGUMENTS
    ```
+3. Create a GitHub release from the tag using `gh release create`. Include:
+   - Title: `OCIF $ARGUMENTS`
+   - Summary of key changes (from the changelog in the spec)
+   - Links to the spec at https://spec.canvasprotocol.org and the full spec text on GitHub
 
 ## Phase 6: Announcements (guided, not automated)
 
