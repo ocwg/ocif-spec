@@ -37,10 +37,9 @@ export default {
 
   themeConfig: {
     siteTitle: 'OCIF Spec',
-    externalLinkIcon: false,
 
     nav: [
-      { text: '← canvasprotocol.org', link: 'https://canvasprotocol.org' },
+      { text: '← canvasprotocol.org', link: 'https://canvasprotocol.org', noIcon: true },
       {
         text: latest,
         items: versions.map((v) => ({
