@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "@ocif/data",
+  "description": "Generic data extension. Used for round-tripping data with no OCIF semantics.",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "@ocif/data",
+      "description": "Identifies the data extension."
+    }
+  },
+  "required": [ "type" ]
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://spec.canvasprotocol.org/v0.7.0/extensions/theme-use.json",
+  "title": "@ocif/theme-use",
+  "description": "Theme selection extension. Selects which theme to apply. Theme selection inherits downwards in the parent-child tree.",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "@ocif/theme-use"
+    },
+    "selectTheme": {
+      "description": "The name of the theme to select. Use null to select no theme (default), which ignores all theme definitions.",
+      "type": ["string", "null"],
+      "default": null
+    }
+  },
+  "required": ["type", "selectTheme"]
+}
