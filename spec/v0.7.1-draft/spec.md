@@ -122,7 +122,8 @@ Open Canvas Interchange Format (OCIF) v0.7.1 © 2025-2026 by Open Canvas Working
   - [OCWG URL Structure (Planned)](#ocwg-url-structure-planned)
   - [Syntax Conventions](#syntax-conventions)
   - [Changes](#changes)
-    - [From v0.6 to v0.7.1](#from-v06-to-v070)
+    - [From v0.7.0 to v0.7.1](#from-v070-to-v071)
+    - [From v0.6 to v0.7.1](#from-v06-to-v071)
     - [From v0.5 to v0.6](#from-v05-to-v06)
     - [From v0.4 to v0.5](#from-v04-to-v05)
     - [From v0.3 to v0.4](#from-v03-to-v04)
@@ -501,12 +502,14 @@ This rectangle acts as a placement box and **clipping mask** on the contents of 
 The clipping mask should be oval if the [Oval Extension](#oval-extension) is used.
 Content is specified with these properties:
 
-| Property      | JSON Type | OCIF Type       | Required | Contents                 | Default   |
-| ------------- | --------- | --------------- | -------- | ------------------------ | --------- |
-| `resource`    | `string`  | [ID](#id)       | optional | The resource to display  |           |
-| `resourceFit` | `string`  | enum, see below | optional | Fitting resource in item | `contain` |
+| Property      | JSON Type         | OCIF Type                 | Required | Contents                 | Default   |
+| ------------- | ----------------- | ------------------------- | -------- | ------------------------ | --------- |
+| `resource`    | `string`, `object`| [ID](#id), [Resource](#resources) | optional | The resource to display  |           |
+| `resourceFit` | `string`          | enum, see below           | optional | Fitting resource in item | `contain` |
 
-- **resource**: A reference to a resource, which can be an image, video, or audio file. See [resources](#resources).
+- **resource**: A _reference to a resource_ or an _inline resource_ object.
+  - As a reference, it is an [ID](#id) of a resource defined in the `resources` array.
+  - As an object, it is a [Resource](#resources) object without an `id` property, scoped to this node.
   - Resource can be empty, in which case a node is acting as a transform for other nodes.
   - Resource content is cropped/limited by the node boundaries.
     This is commonly called _clip children_.
@@ -1273,26 +1276,46 @@ OCIF knows two kinds of assets, [resources](#resources) and [schemas](#schemas).
 
 Resources are the hypermedia assets that nodes display.
 They are stored separately from Nodes to allow for asset reuse and efficiency.
+Alternatively, resources can be **inline** directly within a node's `resource` property.
 Additionally, nodes can be used as resources, too. See [nodes as resource](#nodes-as-resources).
 
-Resources can be referenced by nodes.
-They are stored in the `resources` property of the OCIF file.
+Resources can be referenced by nodes or embedded in them.
+Resources shared across multiple nodes are stored in the `resources` property of the OCIF file.
 Typical resources are, e.g., SVG images, text documents, or media files.
 
 - Each entry in `resources` is an array of _representation_ objects.
 - The order of representations is significant. The first representation is the default representation.
   Later representations can be used as fallbacks.
 
+**Example: Inline Resource** \
+A node with an inline resource (no `id` required).
+
+```json
+{
+  "nodes": [
+    {
+      "id": "n1",
+      "position": [300, 200],
+      "resource": {
+        "representations": [
+          { "mimeType": "text/plain", "content": "Hello, World!" }
+        ]
+      }
+    }
+  ]
+}
+```
+
 A resource is an `object` with the following properties:
 
-| Property          | JSON Type | OCIF Type                           | Required     | Contents                         |
-| ----------------- | --------- | ----------------------------------- | ------------ | -------------------------------- |
-| `id`              | `string`  | [ID](#id)                           | **required** | Identifier of the resource       |
-| `data`            | `array`   | [Extension](#extensions)            | optional     | Additional data for the resource |
-| `representations` | `array`   | [Representation](#representation)[] | **required** | Representations of the resource  |
-| `comment`         | `string`  |                                     | optional     | A comment about the resource     |
+| Property          | JSON Type | OCIF Type                           | Required                   | Contents                         |
+| ----------------- | --------- | ----------------------------------- | -------------------------- | -------------------------------- |
+| `id`              | `string`  | [ID](#id)                           | **required** (if non-inline) | Identifier of the resource       |
+| `data`            | `array`   | [Extension](#extensions)            | optional                   | Additional data for the resource |
+| `representations` | `array`   | [Representation](#representation)[] | **required**               | Representations of the resource  |
+| `comment`         | `string`  |                                     | optional                   | A comment about the resource     |
 
-- **id**: A unique identifier for the resource. See [ID](#id) type for details.
+- **id**: A unique identifier for the resource. See [ID](#id) type for details. Required when the resource is stored in the `resources` array, but MUST be omitted when the resource is used inline within a node.
 
 - **representations**: A list of representations of the resource.
 
@@ -1920,12 +1943,18 @@ A circle has a port at the geometric "top" position.
 - All JSON property names are camelCased. This makes it the easiest to name variables in a programming language.
 
 ## Changes
+### From v0.7.0 to v0.7.1
+
+**Core Specification Changes:**
+
+- Added support for inline resource objects within nodes. The `resource` property of a node can now be an object with `representations` instead of a string ID.
 
 ### From v0.6 to v0.7.1
 
 **Core Specification Changes:**
 
 - Merged **node** and **relation**.
+...
 - Conceptually merged **Node Transforms Extension** into default node properties:
   - Moved Node Transforms properties into core node properties `offset` (-> position), `rotation`, `rotationAxis`, `scale`
   - Changed semantics of node `position`, `size`, `rotation`: they are now interpreted in the local coordinate system (previously global).

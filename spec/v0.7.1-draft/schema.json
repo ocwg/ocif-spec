@@ -120,8 +120,15 @@
           "default": [0, 0, 1]
         },
         "resource": {
-          "type": "string",
-          "description": "The resource to display"
+          "anyOf": [
+            {
+              "type": "string",
+              "description": "The ID of the resource to display"
+            },
+            {
+              "$ref": "#/$defs/resource-content"
+            }
+          ]
         },
         "resourceFit": {
           "type": "string",
@@ -151,7 +158,13 @@
     "resource": {
       "type": "object",
       "description": "A resource in the OCIF document",
-      "allOf": [{ "$ref": "#/$defs/item" }],
+      "allOf": [{ "$ref": "#/$defs/item" }, { "$ref": "#/$defs/resource-content" }],
+      "required": ["id", "representations"]
+    },
+    "resource-content": {
+      "type": "object",
+      "description": "The content of a resource, either inline or shared",
+      "allOf": [{ "$ref": "#/$defs/entity" }],
       "properties": {
         "representations": {
           "type": "array",
@@ -161,7 +174,7 @@
           }
         }
       },
-      "required": ["id", "representations"]
+      "required": ["representations"]
     },
     "representation": {
       "type": "object",
