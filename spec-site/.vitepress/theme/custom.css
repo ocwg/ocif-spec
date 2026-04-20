@@ -1,0 +1,6 @@
+/* Prevent wide code blocks from overflowing into the sidebar. This should not be needed for correctly formatted Markdown but if there are accidental indentations this covers that case. */
+.vp-doc div[class*='language-'],
+.vp-doc pre {
+  overflow-x: auto;
+  max-width: 100%;
+}
